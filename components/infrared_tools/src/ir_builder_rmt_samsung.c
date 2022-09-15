@@ -44,7 +44,7 @@ typedef struct {
     uint32_t ending_code_high_ticks;
     uint32_t ending_code_low_ticks;
     bool inverse;
-    rmt_item32_t buffer[];
+    rmt_item32_t buffer[0];
 } samsung_builder_t;
 
 //code to edit
