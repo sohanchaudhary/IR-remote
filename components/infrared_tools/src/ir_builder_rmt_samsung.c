@@ -1,6 +1,10 @@
 /*******************
-SAMSUNG Protocol
+SAMSUNG IR Protocol supported to TV and projector and repeat code supported
 http://techiesms.blogspot.com/2016/01/ir-protocol-decoding-and-transmiting.html
+https://rusticengineering.wordpress.com/2011/02/09/infrared-room-control-with-samsung-ir-protocol/
+https://www.techdesign.be/projects/011/011_waves.htm
+https://www.mikrocontroller.net/articles/IRMP_-_english#IRMP_SUPPORT_xxx_PROTOCOL
+
 1 bit start bit
 8 bit Address
 8 bit address

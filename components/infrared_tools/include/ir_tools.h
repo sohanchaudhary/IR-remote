@@ -260,6 +260,15 @@ ir_builder_t *ir_builder_rmt_new_rc5(const ir_builder_config_t *config);
 ir_builder_t *ir_builder_rmt_new_samsung(const ir_builder_config_t *config);
 
 /**
+* @brief Creat a LGAC protocol builder
+*
+* @param config: configuration of LGAC builder
+* @return
+*      Handle of LGAC builder or NULL
+*/
+ir_builder_t *ir_builder_rmt_new_lgac(const ir_builder_config_t *config);
+
+/**
 * @brief Creat a NEC protocol parser
 *
 * @param config: configuration of NEC parser
@@ -285,6 +294,15 @@ ir_parser_t *ir_parser_rmt_new_rc5(const ir_parser_config_t *config);
 *      Handle of SAMSUNG parser or NULL
 */
 ir_parser_t *ir_parser_rmt_new_samsung(const ir_parser_config_t *config);
+
+/**
+* @brief Creat a LGAC protocol parser
+*
+* @param config: configuration of LGAC parser
+* @return
+*      Handle of LGAC parser or NULL
+*/
+ir_parser_t *ir_parser_rmt_new_lgac(const ir_parser_config_t *config);
 
 #ifdef __cplusplus
 }

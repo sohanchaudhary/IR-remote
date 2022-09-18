@@ -2080,6 +2080,26 @@
                         "range": null,
                         "title": "SAMSUNG",
                         "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "<choice EXAMPLE_IR_PROTOCOL>",
+                        "help": "The LGAC protocol was introduced by Philips.\nIt uses ASK modulation and Manchester encoding with carrier frequency fixed at 38 kHz.",
+                        "id": "EXAMPLE_IR_PROTOCOL_LGAC",
+                        "name": "EXAMPLE_IR_PROTOCOL_LGAC",
+                        "range": null,
+                        "title": "LGAC",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "<choice EXAMPLE_IR_PROTOCOL>",
+                        "help": "LGTV is a kind of Pulse Distance Protocol.\nIt uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.",
+                        "id": "EXAMPLE_IR_PROTOCOL_LGTV",
+                        "name": "EXAMPLE_IR_PROTOCOL_LGTV",
+                        "range": null,
+                        "title": "LGTV",
+                        "type": "bool"
                     }
                 ],
                 "depends_on": null,
