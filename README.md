@@ -6,4 +6,4 @@ This driver is being developed for continuous monitoring of the IR signals and t
 2. RC5
 3. Samsung (for TV and Projector)
 4. LGTV 
-5. LGAC (in progress not supported yet)
+5. LGAC 
