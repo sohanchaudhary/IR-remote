@@ -93,6 +93,7 @@ static void example_ir_tx_task(void *arg)
     rmt_driver_install(example_tx_channel, 0, 0);
     ir_builder_config_t ir_builder_config = IR_BUILDER_DEFAULT_CONFIG((ir_dev_t)example_tx_channel);
     ir_builder_config.flags |= IR_TOOLS_FLAGS_PROTO_EXT; // Using extended IR protocols (both NEC and RC5 have extended version)
+
 #if CONFIG_EXAMPLE_IR_PROTOCOL_NEC | CONFIG_EXAMPLE_IR_PROTOCOL_LGTV
     ir_builder = ir_builder_rmt_new_nec(&ir_builder_config);
 #elif CONFIG_EXAMPLE_IR_PROTOCOL_RC5

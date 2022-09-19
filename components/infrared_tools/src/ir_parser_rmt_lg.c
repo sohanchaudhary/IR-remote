@@ -37,9 +37,9 @@ static const char *TAG = "lgac_parser";
         }                                                                         \
     } while (0)
 
-//#define LGAC_DATA_FRAME_RMT_WORDS (34)
+#define LGAC_DATA_FRAME_RMT_WORDS (34)
 #define LGAC_REPEAT_FRAME_RMT_WORDS (2)
-#define LGAC_DATA_FRAME_RMT_WORDS (30)
+//#define LGAC_DATA_FRAME_RMT_WORDS (30)
 
 typedef struct {
     ir_parser_t parent;
@@ -152,6 +152,7 @@ static esp_err_t lgac_parser_get_scan_code(ir_parser_t *parser, uint32_t *addres
     bool logic_value = false;
     lgac_parser_t *lgac_parser = __containerof(parser, lgac_parser_t, parent);
     LGAC_CHECK(address && command && repeat, "address, command and repeat can't be null", out, ESP_ERR_INVALID_ARG);
+    /*
     if (lgac_parser->repeat) {
         if (lgac_parse_repeat_frame(lgac_parser)) {
             *address = lgac_parser->last_address;
@@ -161,14 +162,14 @@ static esp_err_t lgac_parser_get_scan_code(ir_parser_t *parser, uint32_t *addres
         }
     } else {
         if (lgac_parse_head(lgac_parser)) {
-            for (int i = 7; i > 0; i--) {
+            for (int i = 15; i > 0; i--) {
                 if (lgac_parse_logic(parser, &logic_value) == ESP_OK) {
-                    addr |= (logic_value >> i);
+                    addr |= (logic_value << i);
                 }
             }
             for (int i = 15; i > 0; i--) {
                 if (lgac_parse_logic(parser, &logic_value) == ESP_OK) {
-                    cmd |= (logic_value >> i);
+                    cmd |= (logic_value << i);
                 }
             }
             *address = addr;
@@ -180,10 +181,43 @@ static esp_err_t lgac_parser_get_scan_code(ir_parser_t *parser, uint32_t *addres
             ret = ESP_OK;
         }
     }
+    */
+
+    if (lgac_parse_head(lgac_parser)) {
+            for (int i = 15; i >= 0; i--) {
+                if (lgac_parse_logic(parser, &logic_value) == ESP_OK) {
+                    addr |= (logic_value << i);
+                }
+            }
+            for (int i = 15; i >= 0; i--) {
+                if (lgac_parse_logic(parser, &logic_value) == ESP_OK) {
+                    cmd |= (logic_value << i);
+                }
+            }
+            *address = addr;
+            *command = cmd;
+            *repeat = false;
+            // keep it as potential repeat code
+            lgac_parser->last_address = addr;
+            lgac_parser->last_command = cmd;
+            ret = ESP_OK;
+        }
 out:
     return ret;
 }
+/*
+     * My guess of the 4 bit checksum
+     * Addition of all 4 nibbles of the 16 bit command
+     * 
+    uint8_t tChecksum = 0;
+    uint16_t tTempForChecksum = aCommand;
+    for (int i = 0; i < 4; ++i) {
+        tChecksum += tTempForChecksum & 0xF; // add low nibble
+        tTempForChecksum >>= 4; // shift by a nibble
+    }
+    return (tRawData | (tChecksum & 0xF));
 
+*/
 static esp_err_t lgac_parser_del(ir_parser_t *parser)
 {
     lgac_parser_t *lgac_parser = __containerof(parser, lgac_parser_t, parent);
@@ -224,3 +258,5 @@ ir_parser_t *ir_parser_rmt_new_lgac(const ir_parser_config_t *config)
 err:
     return ret;
 }
+
+ 

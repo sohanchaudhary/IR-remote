@@ -132,27 +132,33 @@ static esp_err_t lgac_build_frame(ir_builder_t *builder, uint32_t address, uint3
         //LGAC_CHECK(low_byte == (~high_byte & 0xFF), "address not match standard LGAC protocol", err, ESP_ERR_INVALID_ARG);
         LGAC_CHECK(low_byte == (low_byte & 0xFF), "address not match standard LGAC protocol", err, ESP_ERR_INVALID_ARG);
         low_byte = command & 0xFF;
-        //LGAC_CHECK(low_byte == (high_byte & 0xFF), "command not match standard LGAC protocol", err, ESP_ERR_INVALID_ARG);
         uint8_t high_byte = (command >> 8) & 0xFF;;
+        //LGAC_CHECK(low_byte == (high_byte & 0xFF), "command not match standard LGAC protocol", err, ESP_ERR_INVALID_ARG);
         LGAC_CHECK(low_byte == (high_byte & 0xFF), "command not match standard LGAC protocol", err, ESP_ERR_INVALID_ARG);
+        
     }
     builder->make_head(builder);
     // LSB -> MSB
     // MSB -> LSB
-    for (int i = 15; i > 0; i--) {
+    for (int i = 15; i >= 0; i--) {
+        //int a = address & (1 << i);
+        //ESP_LOGI("ADDRESS INFO", "%d", a);
         if (address & (1 << i)) {
             builder->make_logic1(builder);
         } else {
             builder->make_logic0(builder);
         }
     }
-    for (int i = 15; i > 0; i--) {
+    for (int i = 15; i >= 0; i--) {
+        //int b = command & (1 << i);
+       // ESP_LOGI("COMMAND INFO", "%d", b);
         if (command & (1 << i)) {
             builder->make_logic1(builder);
         } else {
             builder->make_logic0(builder);
         }
     }
+    //ESP_LOGI(TAG, "Send command 0x%x to address 0x%x", command, address);
     builder->make_end(builder);
     return ESP_OK;
 err:
