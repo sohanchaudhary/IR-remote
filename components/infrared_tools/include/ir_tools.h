@@ -269,6 +269,15 @@ ir_builder_t *ir_builder_rmt_new_samsung(const ir_builder_config_t *config);
 ir_builder_t *ir_builder_rmt_new_lgac(const ir_builder_config_t *config);
 
 /**
+* @brief Creat a SONY protocol builder
+*
+* @param config: configuration of SONY builder
+* @return
+*      Handle of SONY builder or NULL
+*/
+ir_builder_t *ir_builder_rmt_new_sony(const ir_builder_config_t *config);
+
+/**
 * @brief Creat a NEC protocol parser
 *
 * @param config: configuration of NEC parser
@@ -303,6 +312,15 @@ ir_parser_t *ir_parser_rmt_new_samsung(const ir_parser_config_t *config);
 *      Handle of LGAC parser or NULL
 */
 ir_parser_t *ir_parser_rmt_new_lgac(const ir_parser_config_t *config);
+
+/**
+* @brief Creat a SONY protocol parser
+*
+* @param config: configuration of SONY parser
+* @return
+*      Handle of SONY parser or NULL
+*/
+ir_parser_t *ir_parser_rmt_new_sony(const ir_parser_config_t *config);
 
 #ifdef __cplusplus
 }

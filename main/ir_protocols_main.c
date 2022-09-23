@@ -42,6 +42,8 @@ static void example_ir_rx_task(void *arg)
 
 #if CONFIG_EXAMPLE_IR_PROTOCOL_NEC | CONFIG_EXAMPLE_IR_PROTOCOL_LGTV
     ir_parser = ir_parser_rmt_new_nec(&ir_parser_config);
+#elif CONFIG_EXAMPLE_IR_PROTOCOL_SONY
+    ir_parser = ir_parser_rmt_new_sony(&ir_parser_config);
 #elif CONFIG_EXAMPLE_IR_PROTOCOL_RC5
     ir_parser = ir_parser_rmt_new_rc5(&ir_parser_config);
 #elif CONFIG_EXAMPLE_IR_PROTOCOL_SAMSUNG
@@ -61,7 +63,7 @@ static void example_ir_rx_task(void *arg)
             length /= 4; // one RMT = 4 Bytes
             if (ir_parser->input(ir_parser, items, length) == ESP_OK) {
                 if (ir_parser->get_scan_code(ir_parser, &addr, &cmd, &repeat) == ESP_OK) {
-                    ESP_LOGI(TAG, "Scan Code %s --- addr: 0x%04x cmd: 0x%04x", repeat ? "(repeat)" : "", addr, cmd);
+                    ESP_LOGI(TAG, "Scan Code %s --- addr: 0x%03x cmd: 0x%03x", repeat ? "(repeat)" : "", addr, cmd);
                 }
                     }
             //after parsing the data, return spaces to ringbuffer.
@@ -100,11 +102,13 @@ static void example_ir_tx_task(void *arg)
     ir_builder = ir_builder_rmt_new_rc5(&ir_builder_config);
 #elif CONFIG_EXAMPLE_IR_PROTOCOL_SAMSUNG
     ir_builder = ir_builder_rmt_new_samsung(&ir_builder_config);
+#elif CONFIG_EXAMPLE_IR_PROTOCOL_SONY_12 | CONFIG_EXAMPLE_IR_PROTOCOL_SONY_15 | CONFIG_EXAMPLE_IR_PROTOCOL_SONY_20
+    ir_builder = ir_builder_rmt_new_sony(&ir_builder_config);
 #elif CONFIG_EXAMPLE_IR_PROTOCOL_LGAC
     ir_builder = ir_builder_rmt_new_lgac(&ir_builder_config);
 #endif
     while (1) {
-        vTaskDelay(pdMS_TO_TICKS(2000));
+        vTaskDelay(pdMS_TO_TICKS(20000));
         ESP_LOGI(TAG, "Send command 0x%x to address 0x%x", cmd, addr);
         // Send new key code
         ESP_ERROR_CHECK(ir_builder->build_frame(ir_builder, addr, cmd));

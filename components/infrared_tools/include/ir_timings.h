@@ -67,6 +67,35 @@ extern "C" {
 #define LGAC_REPEAT_CODE_LOW_US (2250)
 #define LGAC_ENDING_CODE_HIGH_US (560)
 
+/**
+ * @brief Timings for SONY (SIRCS) protocol
+ *
+ */
+#define SONY_LEADING_CODE_HIGH_US (2400)
+#define SONY_LEADING_CODE_LOW_US (600)
+#define SONY_PAYLOAD_ONE_HIGH_US (1200)
+#define SONY_PAYLOAD_ONE_LOW_US (600)
+#define SONY_PAYLOAD_ZERO_HIGH_US (600)
+#define SONY_PAYLOAD_ZERO_LOW_US (600)
+#define SONY_REPEAT_CODE_HIGH_US (2400)
+#define SONY_REPEAT_CODE_LOW_US (600)
+//#define SONY_ENDING_CODE_HIGH_US (560)
+
+/**
+ * @brief Timings for GREE protocol
+ *
+ */
+/*
+#define GREE_LEADING_CODE_HIGH_US (9000)
+#define GREE_LEADING_CODE_LOW_US (4500)
+#define GREE_PAYLOAD_ONE_HIGH_US (620)
+#define GREE_PAYLOAD_ONE_LOW_US (1600)
+#define GREE_PAYLOAD_ZERO_HIGH_US (620)
+#define GREE_PAYLOAD_ZERO_LOW_US (540)
+//#define GREE_REPEAT_CODE_HIGH_US (2400)
+//#define GREE_REPEAT_CODE_LOW_US (600)
+//#define GREE_ENDING_CODE_HIGH_US (560)
+*/
 
 #ifdef __cplusplus
 }

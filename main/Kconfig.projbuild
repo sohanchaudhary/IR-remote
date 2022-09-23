@@ -27,13 +27,31 @@ menu "Example Configuration"
             bool "LGAC"
             help
                 The LGAC protocol was introduced by Philips.
-                It uses ASK modulation and Manchester encoding with carrier frequency fixed at 38 kHz.
+                It uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.
 
         config EXAMPLE_IR_PROTOCOL_LGTV
             bool "LGTV"
             help
                 LGTV is a kind of Pulse Distance Protocol.
                 It uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.
+
+        config EXAMPLE_IR_PROTOCOL_SONY_12
+            bool "SONY"
+            help
+                SONY is a kind of Pulse Distance Protocol.
+                It uses ASK modulation and pulse Width encoding with a carrier frequency of 38 kHz.
+        
+        config EXAMPLE_IR_PROTOCOL_SONY_15
+            bool "SONY"
+            help
+                SONY is a kind of Pulse Distance Protocol.
+                It uses ASK modulation and pulse Width encoding with a carrier frequency of 38 kHz.
+
+        config EXAMPLE_IR_PROTOCOL_SONY_20
+            bool "SONY"
+            help
+                SONY is a kind of Pulse Distance Protocol.
+                It uses ASK modulation and pulse Width encoding with a carrier frequency of 38 kHz.
 
     endchoice
 
