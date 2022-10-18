@@ -11,10 +11,28 @@ menu "Example Configuration"
                 GREE is a kind of Pulse Distance Protocol.
                 It uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.
 
+        config EXAMPLE_IR_PROTOCOL_SHARP
+            bool "SHARP"
+            help
+                SHARP is a kind of Pulse Distance Protocol.
+                It uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.
+
         config EXAMPLE_IR_PROTOCOL_NEC
             bool "NEC"
             help
                 NEC is a kind of Pulse Distance Protocol.
+                It uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.
+
+        config EXAMPLE_IR_PROTOCOL_PANASONIC
+            bool "PANASONIC"
+            help
+                PANASONIC is a kind of Pulse Distance Protocol.
+                It uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.
+
+        config EXAMPLE_IR_PROTOCOL_DISH
+            bool "DISH"
+            help
+                DISH is a kind of Pulse Distance Protocol.
                 It uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.
 
         config EXAMPLE_IR_PROTOCOL_RC5

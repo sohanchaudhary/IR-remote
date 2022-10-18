@@ -77,6 +77,12 @@ static void example_ir_rx_task(void *arg)
     ir_parser = ir_parser_rmt_new_lgac(&ir_parser_config);  
 #elif CONFIG_EXAMPLE_IR_PROTOCOL_GREE
     ir_parser = ir_parser_rmt_new_gree(&ir_parser_config);  
+#elif CONFIG_EXAMPLE_IR_PROTOCOL_PANASONIC
+    ir_parser = ir_parser_rmt_new_panasonic(&ir_parser_config);
+#elif CONFIG_EXAMPLE_IR_PROTOCOL_SHARP
+    ir_parser = ir_parser_rmt_new_sharp(&ir_parser_config);
+#elif CONFIG_EXAMPLE_IR_PROTOCOL_DISH
+    ir_parser = ir_parser_rmt_new_dish(&ir_parser_config);
 #endif
 
     //get RMT RX ringbuffer
@@ -86,7 +92,6 @@ static void example_ir_rx_task(void *arg)
     rmt_rx_start(example_rx_channel, true);
     while (1) {
         items = (rmt_item32_t *) xRingbufferReceive(rb, &length, portMAX_DELAY);
-        //items = (rmt_item32_t *) xRingbufferReceive(rb, &length, 0xFFFFFFFFFFFFFFFFFFFF);
         //ESP_LOGI("INFO"," Received raw length = %d", length);
         if (items) {
             length /= 4; // one RMT = 4 Bytes
@@ -158,7 +163,14 @@ static void example_ir_tx_task(void *arg)
     ir_builder = ir_builder_rmt_new_lgac(&ir_builder_config);
 #elif CONFIG_EXAMPLE_IR_PROTOCOL_GREE
     ir_builder = ir_builder_rmt_new_gree(&ir_builder_config);
+#elif CONFIG_EXAMPLE_IR_PROTOCOL_PANASONIC
+    ir_builder = ir_builder_rmt_new_panasonic(&ir_builder_config);
+#elif CONFIG_EXAMPLE_IR_PROTOCOL_SHARP
+    ir_builder = ir_builder_rmt_new_sharp(&ir_builder_config);
+#elif CONFIG_EXAMPLE_IR_PROTOCOL_DISH
+    ir_builder = ir_builder_rmt_new_dish(&ir_builder_config);
 #endif
+
     while (1) {
 #if CONFIG_EXAMPLE_IR_PROTOCOL_GREE
         vTaskDelay(pdMS_TO_TICKS(20000));

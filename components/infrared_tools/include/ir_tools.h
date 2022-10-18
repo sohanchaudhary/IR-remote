@@ -310,6 +310,33 @@ ir_builder_t *ir_builder_rmt_new_sony(const ir_builder_config_t *config);
 ir_builder_t *ir_builder_rmt_new_gree(const ir_builder_config_t *config);
 
 /**
+* @brief Creat a PANASONIC protocol builder
+*
+* @param config: configuration of PANASONIC builder
+* @return
+*      Handle of PANASONIC builder or NULL
+*/
+ir_builder_t *ir_builder_rmt_new_panasonic(const ir_builder_config_t *config);
+
+/**
+* @brief Creat a SHARP protocol builder
+*
+* @param config: configuration of SHARP builder
+* @return
+*      Handle of SHARP builder or NULL
+*/
+ir_builder_t *ir_builder_rmt_new_sharp(const ir_builder_config_t *config);
+
+/**
+* @brief Creat a DISH protocol builder
+*
+* @param config: configuration of DISH builder
+* @return
+*      Handle of DISH builder or NULL
+*/
+ir_builder_t *ir_builder_rmt_new_dish(const ir_builder_config_t *config);
+
+/**
 * @brief Creat a NEC protocol parser
 *
 * @param config: configuration of NEC parser
@@ -362,6 +389,33 @@ ir_parser_t *ir_parser_rmt_new_sony(const ir_parser_config_t *config);
 *      Handle of GREE parser or NULL
 */
 ir_parser_t *ir_parser_rmt_new_gree(const ir_parser_config_t *config);
+
+/**
+* @brief Creat a PANASONIC protocol parser
+*
+* @param config: configuration of PANASONIC parser
+* @return
+*      Handle of PANASONIC parser or NULL
+*/
+ir_parser_t *ir_parser_rmt_new_panasonic(const ir_parser_config_t *config);
+
+/**
+* @brief Creat a SHARP protocol parser
+*
+* @param config: configuration of SHARP parser
+* @return
+*      Handle of SHARP parser or NULL
+*/
+ir_parser_t *ir_parser_rmt_new_sharp(const ir_parser_config_t *config);
+
+/**
+* @brief Creat a DISH protocol parser
+*
+* @param config: configuration of DISH parser
+* @return
+*      Handle of DISH parser or NULL
+*/
+ir_parser_t *ir_parser_rmt_new_dish(const ir_parser_config_t *config);
 
 #ifdef __cplusplus
 }
