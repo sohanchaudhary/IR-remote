@@ -86,6 +86,28 @@ struct ir_builder_s {
     esp_err_t (*make_logic1)(ir_builder_t *builder);
 
     /**
+    * @brief Build footer
+    *
+    * @param[in] builder: Handle of IR builder
+    *
+    * @return
+    *      ESP_OK: Build GREE footer successfully
+    *      ESP_FAIL: Build GREE footer failed because some error occurred
+    */
+    esp_err_t (*make_footer)(ir_builder_t *builder);
+
+    /**
+    * @brief Build MSG_SPACE
+    *
+    * @param[in] builder: Handle of IR builder
+    *
+    * @return
+    *      ESP_OK: Build GREE MSG_SPACE successfully
+    *      ESP_FAIL: Build GREE MSG_SPACE failed because some error occurred
+    */
+    esp_err_t (*make_message_space)(ir_builder_t *builder);
+
+    /**
     * @brief Build frame tail
     *
     * @param[in] builder: Handle of IR builder
@@ -106,7 +128,7 @@ struct ir_builder_s {
     *      - ESP_FAIL: Build a complete frame failed because some error occurred
     */
     esp_err_t (*build_frame)(ir_builder_t *builder, uint32_t address, uint32_t command);
-
+    
     /**
     * @brief Build a repeat frame
     *
@@ -177,6 +199,7 @@ struct ir_parser_s {
     *      - ESP_FAIL: Get scan code failed because some error occurred
     */
     esp_err_t (*get_scan_code)(ir_parser_t *parser, uint32_t *address, uint32_t *command, bool *repeat);
+    esp_err_t (*get_scan_code_gree)(ir_parser_t *parser, uint32_t *address, uint32_t *footer, uint32_t *command, bool *repeat);
 
     /**
     * @brief Free resources used by IR parser
@@ -212,11 +235,11 @@ typedef struct {
 
 /**
  * @brief Default configuration for IR builder
- *
+ *  // .buffer_size = 64,  
  */
 #define IR_BUILDER_DEFAULT_CONFIG(dev) \
     {                                  \
-        .buffer_size = 64,             \
+        .buffer_size = 140,           \
         .dev_hdl = dev,                \
         .flags = 0,                    \
     }
@@ -278,6 +301,15 @@ ir_builder_t *ir_builder_rmt_new_lgac(const ir_builder_config_t *config);
 ir_builder_t *ir_builder_rmt_new_sony(const ir_builder_config_t *config);
 
 /**
+* @brief Creat a GREE protocol builder
+*
+* @param config: configuration of GREE builder
+* @return
+*      Handle of GREE builder or NULL
+*/
+ir_builder_t *ir_builder_rmt_new_gree(const ir_builder_config_t *config);
+
+/**
 * @brief Creat a NEC protocol parser
 *
 * @param config: configuration of NEC parser
@@ -321,6 +353,15 @@ ir_parser_t *ir_parser_rmt_new_lgac(const ir_parser_config_t *config);
 *      Handle of SONY parser or NULL
 */
 ir_parser_t *ir_parser_rmt_new_sony(const ir_parser_config_t *config);
+
+/**
+* @brief Creat a GREE protocol parser
+*
+* @param config: configuration of GREE parser
+* @return
+*      Handle of GREE parser or NULL
+*/
+ir_parser_t *ir_parser_rmt_new_gree(const ir_parser_config_t *config);
 
 #ifdef __cplusplus
 }

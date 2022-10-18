@@ -85,17 +85,18 @@ extern "C" {
  * @brief Timings for GREE protocol
  *
  */
-/*
 #define GREE_LEADING_CODE_HIGH_US (9000)
 #define GREE_LEADING_CODE_LOW_US (4500)
 #define GREE_PAYLOAD_ONE_HIGH_US (620)
 #define GREE_PAYLOAD_ONE_LOW_US (1600)
 #define GREE_PAYLOAD_ZERO_HIGH_US (620)
 #define GREE_PAYLOAD_ZERO_LOW_US (540)
+#define GREE_MESSAGE_SPACE_HIGH_US (620)
+#define GREE_MESSAGE_SPACE_LOW_US (19980)
 //#define GREE_REPEAT_CODE_HIGH_US (2400)
 //#define GREE_REPEAT_CODE_LOW_US (600)
-//#define GREE_ENDING_CODE_HIGH_US (560)
-*/
+#define GREE_ENDING_CODE_HIGH_US (620)
+
 
 #ifdef __cplusplus
 }

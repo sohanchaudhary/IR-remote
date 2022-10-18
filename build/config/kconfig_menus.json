@@ -2054,6 +2054,16 @@
                     {
                         "children": [],
                         "depends_on": "<choice EXAMPLE_IR_PROTOCOL>",
+                        "help": "GREE is a kind of Pulse Distance Protocol.\nIt uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.",
+                        "id": "EXAMPLE_IR_PROTOCOL_GREE",
+                        "name": "EXAMPLE_IR_PROTOCOL_GREE",
+                        "range": null,
+                        "title": "GREE",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "<choice EXAMPLE_IR_PROTOCOL>",
                         "help": "NEC is a kind of Pulse Distance Protocol.\nIt uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.",
                         "id": "EXAMPLE_IR_PROTOCOL_NEC",
                         "name": "EXAMPLE_IR_PROTOCOL_NEC",
@@ -2105,10 +2115,30 @@
                         "children": [],
                         "depends_on": "<choice EXAMPLE_IR_PROTOCOL>",
                         "help": "SONY is a kind of Pulse Distance Protocol.\nIt uses ASK modulation and pulse Width encoding with a carrier frequency of 38 kHz.",
-                        "id": "EXAMPLE_IR_PROTOCOL_SONY",
-                        "name": "EXAMPLE_IR_PROTOCOL_SONY",
+                        "id": "EXAMPLE_IR_PROTOCOL_SONY_12",
+                        "name": "EXAMPLE_IR_PROTOCOL_SONY_12",
                         "range": null,
-                        "title": "SONY",
+                        "title": "SONY_12",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "<choice EXAMPLE_IR_PROTOCOL>",
+                        "help": "SONY is a kind of Pulse Distance Protocol.\nIt uses ASK modulation and pulse Width encoding with a carrier frequency of 38 kHz.",
+                        "id": "EXAMPLE_IR_PROTOCOL_SONY_15",
+                        "name": "EXAMPLE_IR_PROTOCOL_SONY_15",
+                        "range": null,
+                        "title": "SONY_15",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "<choice EXAMPLE_IR_PROTOCOL>",
+                        "help": "SONY is a kind of Pulse Distance Protocol.\nIt uses ASK modulation and pulse Width encoding with a carrier frequency of 38 kHz.",
+                        "id": "EXAMPLE_IR_PROTOCOL_SONY_20",
+                        "name": "EXAMPLE_IR_PROTOCOL_SONY_20",
+                        "range": null,
+                        "title": "SONY_20",
                         "type": "bool"
                     }
                 ],

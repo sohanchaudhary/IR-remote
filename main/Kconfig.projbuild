@@ -5,6 +5,12 @@ menu "Example Configuration"
         help
             Choose the IR protocol used in the example.
 
+        config EXAMPLE_IR_PROTOCOL_GREE
+            bool "GREE"
+            help
+                GREE is a kind of Pulse Distance Protocol.
+                It uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.
+
         config EXAMPLE_IR_PROTOCOL_NEC
             bool "NEC"
             help
@@ -36,19 +42,19 @@ menu "Example Configuration"
                 It uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.
 
         config EXAMPLE_IR_PROTOCOL_SONY_12
-            bool "SONY"
+            bool "SONY_12"
             help
                 SONY is a kind of Pulse Distance Protocol.
                 It uses ASK modulation and pulse Width encoding with a carrier frequency of 38 kHz.
         
         config EXAMPLE_IR_PROTOCOL_SONY_15
-            bool "SONY"
+            bool "SONY_15"
             help
                 SONY is a kind of Pulse Distance Protocol.
                 It uses ASK modulation and pulse Width encoding with a carrier frequency of 38 kHz.
 
         config EXAMPLE_IR_PROTOCOL_SONY_20
-            bool "SONY"
+            bool "SONY_20"
             help
                 SONY is a kind of Pulse Distance Protocol.
                 It uses ASK modulation and pulse Width encoding with a carrier frequency of 38 kHz.

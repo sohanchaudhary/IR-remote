@@ -8,4 +8,7 @@ This driver is being developed for continuous monitoring of the IR signals and t
 4. LGTV 
 5. LGAC 
 6. Sony (SIRCS) all 12 bits, 15 bits, 20 bits
-7. GREE (In progress)
+7. GREE 
+8. PANASONIC
+9. DISH
+10. SHARP (In Progress)

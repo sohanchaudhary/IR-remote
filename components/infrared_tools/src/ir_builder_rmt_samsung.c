@@ -128,6 +128,7 @@ static esp_err_t samsung_build_frame(ir_builder_t *builder, uint32_t address, ui
         }
     }
     builder->make_end(builder);
+    //ESP_LOGI("BUFFER INFO", "%d", samsung_builder->cursor);
     return ESP_OK;
 err:
     return ret;

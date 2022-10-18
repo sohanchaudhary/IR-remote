@@ -30,12 +30,14 @@ static const char *TAG = "sony_parser";
         }                                                                         \
     } while (0)
 
-#if CONFIG_EXAMPLE_IR_PROTOCOL_SONY_12
-    #define SONY_DATA_FRAME_RMT_WORDS (13)
-#elif CONFIG_EXAMPLE_IR_PROTOCOL_SONY_15
+//#if CONFIG_EXAMPLE_IR_PROTOCOL_SONY_12
+#define SONY_DATA_FRAME_RMT_WORDS (13)
+#if CONFIG_EXAMPLE_IR_PROTOCOL_SONY_15
     #define SONY_DATA_FRAME_RMT_WORDS (16)
-#if CONFIG_EXAMPLE_IR_PROTOCOL_SONY_20
+#elif CONFIG_EXAMPLE_IR_PROTOCOL_SONY_20
     #define SONY_DATA_FRAME_RMT_WORDS (21)
+#endif
+
 #define SONY_REPEAT_FRAME_RMT_WORDS (2)
 
 typedef struct {

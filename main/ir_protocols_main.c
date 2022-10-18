@@ -28,14 +28,39 @@ static void example_ir_rx_task(void *arg)
 {
     uint32_t addr = 0;
     uint32_t cmd = 0;
+    uint32_t ftr = 0;
     size_t length = 0;
     bool repeat = false;
     RingbufHandle_t rb = NULL;
     rmt_item32_t *items = NULL;
 
+#if CONFIG_EXAMPLE_IR_PROTOCOL_GREE
+        /**
+     * @brief Default configuration for RX channel
+     *
+     */
+    #define RMT_DEFAULT_CONFIG_RX(gpio, channel_id) \
+        {                                           \
+            .rmt_mode = RMT_MODE_RX,                \
+            .channel = channel_id,                  \
+            .gpio_num = gpio,                       \
+            .clk_div = 80,                          \
+            .mem_block_num = 1,                     \
+            .flags = 0,                             \
+            .rx_config = {                          \
+                .idle_threshold = 21000,            \
+                .filter_ticks_thresh = 100,         \
+                .filter_en = true,                  \
+            }                                       \
+        }
     rmt_config_t rmt_rx_config = RMT_DEFAULT_CONFIG_RX(CONFIG_EXAMPLE_RMT_RX_GPIO, example_rx_channel);
+#else
+    rmt_config_t rmt_rx_config = RMT_DEFAULT_CONFIG_RX(CONFIG_EXAMPLE_RMT_RX_GPIO, example_rx_channel);
+    ESP_LOGI("INFO"," rx config OK");
+#endif
+
     rmt_config(&rmt_rx_config);
-    rmt_driver_install(example_rx_channel, 1000, 0);
+    rmt_driver_install(example_rx_channel, 2000, 0);
     ir_parser_config_t ir_parser_config = IR_PARSER_DEFAULT_CONFIG((ir_dev_t)example_rx_channel);
     ir_parser_config.flags |= IR_TOOLS_FLAGS_PROTO_EXT; // Using extended IR protocols (both NEC and RC5 have extended version)
     ir_parser_t *ir_parser = NULL;
@@ -50,6 +75,8 @@ static void example_ir_rx_task(void *arg)
     ir_parser = ir_parser_rmt_new_samsung(&ir_parser_config);  
 #elif CONFIG_EXAMPLE_IR_PROTOCOL_LGAC
     ir_parser = ir_parser_rmt_new_lgac(&ir_parser_config);  
+#elif CONFIG_EXAMPLE_IR_PROTOCOL_GREE
+    ir_parser = ir_parser_rmt_new_gree(&ir_parser_config);  
 #endif
 
     //get RMT RX ringbuffer
@@ -59,13 +86,27 @@ static void example_ir_rx_task(void *arg)
     rmt_rx_start(example_rx_channel, true);
     while (1) {
         items = (rmt_item32_t *) xRingbufferReceive(rb, &length, portMAX_DELAY);
+        //items = (rmt_item32_t *) xRingbufferReceive(rb, &length, 0xFFFFFFFFFFFFFFFFFFFF);
+        //ESP_LOGI("INFO"," Received raw length = %d", length);
         if (items) {
             length /= 4; // one RMT = 4 Bytes
+            //ESP_LOGI("INFO"," Received RMT BYTE length = %d", length);
             if (ir_parser->input(ir_parser, items, length) == ESP_OK) {
-                if (ir_parser->get_scan_code(ir_parser, &addr, &cmd, &repeat) == ESP_OK) {
-                    ESP_LOGI(TAG, "Scan Code %s --- addr: 0x%03x cmd: 0x%03x", repeat ? "(repeat)" : "", addr, cmd);
+               // ESP_LOGI("INFO"," Input ok");
+#if CONFIG_EXAMPLE_IR_PROTOCOL_GREE
+                if (ir_parser->get_scan_code_gree(ir_parser, &addr, &ftr, &cmd, &repeat) == ESP_OK) {
+                    //ESP_LOGI("INFO"," scan code OK");
+                    ESP_LOGI(TAG, "Scan Code %s --- data0: 0x%x footer: 0x%x data1: 0x%08x", repeat ? "(repeat)" : "", addr, ftr, cmd);
                 }
-                    }
+                else {
+                    ESP_LOGI("INFO", "scan code NOT OK");
+                }
+#else
+                if (ir_parser->get_scan_code(ir_parser, &addr, &cmd, &repeat) == ESP_OK) {
+                    ESP_LOGI(TAG, "Scan Code %s --- data0: 0x%04x data1: 0x%04x", repeat ? "(repeat)" : "", addr, cmd);
+                }
+#endif
+            }
             //after parsing the data, return spaces to ringbuffer.
             vRingbufferReturnItem(rb, (void *) items);
         }
@@ -83,8 +124,17 @@ static void example_ir_rx_task(void *arg)
  */
 static void example_ir_tx_task(void *arg)
 {
+
+#if CONFIG_EXAMPLE_IR_PROTOCOL_GREE
+    uint32_t addr = 0x50200471;
+    uint32_t cmd = 0x40004211;
+    uint32_t addr1 = 0x50600479;
+    uint32_t cmd1 = 0xc0004611;
+#else 
     uint32_t addr = 0x10;
     uint32_t cmd = 0x20;
+#endif
+
     rmt_item32_t *items = NULL;
     size_t length = 0;
     ir_builder_t *ir_builder = NULL;
@@ -106,15 +156,32 @@ static void example_ir_tx_task(void *arg)
     ir_builder = ir_builder_rmt_new_sony(&ir_builder_config);
 #elif CONFIG_EXAMPLE_IR_PROTOCOL_LGAC
     ir_builder = ir_builder_rmt_new_lgac(&ir_builder_config);
+#elif CONFIG_EXAMPLE_IR_PROTOCOL_GREE
+    ir_builder = ir_builder_rmt_new_gree(&ir_builder_config);
 #endif
     while (1) {
+#if CONFIG_EXAMPLE_IR_PROTOCOL_GREE
         vTaskDelay(pdMS_TO_TICKS(20000));
+#endif
+        vTaskDelay(pdMS_TO_TICKS(2000));
         ESP_LOGI(TAG, "Send command 0x%x to address 0x%x", cmd, addr);
         // Send new key code
         ESP_ERROR_CHECK(ir_builder->build_frame(ir_builder, addr, cmd));
         ESP_ERROR_CHECK(ir_builder->get_result(ir_builder, &items, &length));
+        //ESP_LOGI("INFO"," transmitted length = %d", length);
         //To send data according to the waveform items.
         rmt_write_items(example_tx_channel, items, length, false);
+
+#if CONFIG_EXAMPLE_IR_PROTOCOL_GREE
+        vTaskDelay(pdMS_TO_TICKS(20000));
+        ESP_LOGI(TAG, "Send command 0x%x to address 0x%x", cmd1, addr1);
+        // Send new key code
+        ESP_ERROR_CHECK(ir_builder->build_frame(ir_builder, addr1, cmd1));
+        ESP_ERROR_CHECK(ir_builder->get_result(ir_builder, &items, &length));
+        //ESP_LOGI("INFO"," transmitted length = %d", length);
+        //To send data according to the waveform items.
+        rmt_write_items(example_tx_channel, items, length, false);
+#endif
         // Send repeat code
         vTaskDelay(pdMS_TO_TICKS(ir_builder->repeat_period_ms));
         ESP_ERROR_CHECK(ir_builder->build_repeat_frame(ir_builder));
