@@ -2064,11 +2064,41 @@
                     {
                         "children": [],
                         "depends_on": "<choice EXAMPLE_IR_PROTOCOL>",
+                        "help": "SHARP is a kind of Pulse Distance Protocol.\nIt uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.",
+                        "id": "EXAMPLE_IR_PROTOCOL_SHARP",
+                        "name": "EXAMPLE_IR_PROTOCOL_SHARP",
+                        "range": null,
+                        "title": "SHARP",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "<choice EXAMPLE_IR_PROTOCOL>",
                         "help": "NEC is a kind of Pulse Distance Protocol.\nIt uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.",
                         "id": "EXAMPLE_IR_PROTOCOL_NEC",
                         "name": "EXAMPLE_IR_PROTOCOL_NEC",
                         "range": null,
                         "title": "NEC",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "<choice EXAMPLE_IR_PROTOCOL>",
+                        "help": "PANASONIC is a kind of Pulse Distance Protocol.\nIt uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.",
+                        "id": "EXAMPLE_IR_PROTOCOL_PANASONIC",
+                        "name": "EXAMPLE_IR_PROTOCOL_PANASONIC",
+                        "range": null,
+                        "title": "PANASONIC",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "<choice EXAMPLE_IR_PROTOCOL>",
+                        "help": "DISH is a kind of Pulse Distance Protocol.\nIt uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.",
+                        "id": "EXAMPLE_IR_PROTOCOL_DISH",
+                        "name": "EXAMPLE_IR_PROTOCOL_DISH",
+                        "range": null,
+                        "title": "DISH",
                         "type": "bool"
                     },
                     {

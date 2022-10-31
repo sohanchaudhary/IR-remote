@@ -54,6 +54,31 @@ static void example_ir_rx_task(void *arg)
             }                                       \
         }
     rmt_config_t rmt_rx_config = RMT_DEFAULT_CONFIG_RX(CONFIG_EXAMPLE_RMT_RX_GPIO, example_rx_channel);
+    ESP_LOGI("RECEIVER INFO", "GREE CONFIGURED");
+    
+#elif CONFIG_EXAMPLE_IR_PROTOCOL_SHARP 
+
+        /**
+     * @brief Default configuration for RX channel
+     *
+     */
+    #define RMT_DEFAULT_CONFIG_RX(gpio, channel_id) \
+        {                                           \
+            .rmt_mode = RMT_MODE_RX,                \
+            .channel = channel_id,                  \
+            .gpio_num = gpio,                       \
+            .clk_div = 80,                          \
+            .mem_block_num = 1,                     \
+            .flags = 0,                             \
+            .rx_config = {                          \
+                .idle_threshold = 155000,            \
+                .filter_ticks_thresh = 100,         \
+                .filter_en = true,                  \
+            }                                       \
+        }
+    rmt_config_t rmt_rx_config = RMT_DEFAULT_CONFIG_RX(CONFIG_EXAMPLE_RMT_RX_GPIO, example_rx_channel);
+    ESP_LOGI("RECEIVER INFO", "SHARP CONFIGURED");
+    
 #else
     rmt_config_t rmt_rx_config = RMT_DEFAULT_CONFIG_RX(CONFIG_EXAMPLE_RMT_RX_GPIO, example_rx_channel);
     ESP_LOGI("INFO"," rx config OK");
@@ -89,15 +114,17 @@ static void example_ir_rx_task(void *arg)
     rmt_get_ringbuf_handle(example_rx_channel, &rb);
     assert(rb != NULL);
     // Start receive
+    //ESP_LOGI("INFO", "START");
     rmt_rx_start(example_rx_channel, true);
     while (1) {
-        items = (rmt_item32_t *) xRingbufferReceive(rb, &length, portMAX_DELAY);
-        //ESP_LOGI("INFO"," Received raw length = %d", length);
+        //items = (rmt_item32_t *) xRingbufferReceive(rb, &length, portMAX_DELAY);
+        items = (rmt_item32_t *) xRingbufferReceive(rb, &length, pdMS_TO_TICKS(0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFUL));
+        ESP_LOGI("INFO"," Received raw length = %d", length);
         if (items) {
             length /= 4; // one RMT = 4 Bytes
-            //ESP_LOGI("INFO"," Received RMT BYTE length = %d", length);
+            ESP_LOGI("INFO"," Received RMT BYTE length = %d", length);
             if (ir_parser->input(ir_parser, items, length) == ESP_OK) {
-               // ESP_LOGI("INFO"," Input ok");
+                // ESP_LOGI("INFO"," Input ok");
 #if CONFIG_EXAMPLE_IR_PROTOCOL_GREE
                 if (ir_parser->get_scan_code_gree(ir_parser, &addr, &ftr, &cmd, &repeat) == ESP_OK) {
                     //ESP_LOGI("INFO"," scan code OK");
@@ -108,7 +135,7 @@ static void example_ir_rx_task(void *arg)
                 }
 #else
                 if (ir_parser->get_scan_code(ir_parser, &addr, &cmd, &repeat) == ESP_OK) {
-                    ESP_LOGI(TAG, "Scan Code %s --- data0: 0x%04x data1: 0x%04x", repeat ? "(repeat)" : "", addr, cmd);
+                    ESP_LOGI(TAG, "Scan Code %s --- address: 0x%04x command: 0x%04x", repeat ? "(repeat)" : "", addr, cmd);
                 }
 #endif
             }
@@ -180,7 +207,7 @@ static void example_ir_tx_task(void *arg)
         // Send new key code
         ESP_ERROR_CHECK(ir_builder->build_frame(ir_builder, addr, cmd));
         ESP_ERROR_CHECK(ir_builder->get_result(ir_builder, &items, &length));
-        //ESP_LOGI("INFO"," transmitted length = %d", length);
+        ESP_LOGI("INFO"," transmitted length = %d", length);
         //To send data according to the waveform items.
         rmt_write_items(example_tx_channel, items, length, false);
 
@@ -194,11 +221,13 @@ static void example_ir_tx_task(void *arg)
         //To send data according to the waveform items.
         rmt_write_items(example_tx_channel, items, length, false);
 #endif
+#if (!(CONFIG_EXAMPLE_IR_PROTOCOL_GREE | CONFIG_EXAMPLE_IR_PROTOCOL_SHARP))       
         // Send repeat code
         vTaskDelay(pdMS_TO_TICKS(ir_builder->repeat_period_ms));
         ESP_ERROR_CHECK(ir_builder->build_repeat_frame(ir_builder));
         ESP_ERROR_CHECK(ir_builder->get_result(ir_builder, &items, &length));
         rmt_write_items(example_tx_channel, items, length, false);
+#endif
         cmd++;
     }
     ir_builder->del(ir_builder);

@@ -1,3 +1,16 @@
+//==============================================================================
+//                    DDDD   EEEEE  N   N   OOO   N   N
+//                     D  D  E      NN  N  O   O  NN  N
+//                     D  D  EEE    N N N  O   O  N N N
+//                     D  D  E      N  NN  O   O  N  NN
+//                    DDDD   EEEEE  N   N   OOO   N   N
+//==============================================================================
+//                       SSSS  H   H   AAA   RRRR   PPPP
+//                      S      H   H  A   A  R   R  P   P
+//                       SSS   HHHHH  AAAAA  RRRR   PPPP
+//                          S  H   H  A   A  R  R   P
+//                      SSSS   H   H  A   A  R   R  P
+//==============================================================================
 #include <sys/cdefs.h>
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
@@ -38,15 +51,18 @@ typedef struct {
 } sharp_builder_t;
 
 
-static esp_err_t sharp_builder_make_spacegap(ir_builder_t *builder)
+static esp_err_t sharp_builder_make_message_space(ir_builder_t *builder)
 {
     sharp_builder_t *sharp_builder = __containerof(builder, sharp_builder_t, parent);
     //sharp_builder->cursor = 0;
+    ESP_LOGI("INFO", "SpaceGap Builder Cursor = %d", sharp_builder->cursor);
     //sharp_builder->buffer[sharp_builder->cursor].level0 = !sharp_builder->inverse;
-    //sharp_builder->buffer[sharp_builder->cursor].duration0 = sharp_builder->leading_code_high_ticks;
+    //sharp_builder->buffer[sharp_builder->cursor].duration0 = sharp_builder->msggap_high_ticks;
     sharp_builder->buffer[sharp_builder->cursor].level1 = sharp_builder->inverse;
     sharp_builder->buffer[sharp_builder->cursor].duration1 = sharp_builder->msggap_low_ticks;
+   // ESP_LOGI("INFO", "SpaceGap Cursor = %d", sharp_builder->cursor);
     sharp_builder->cursor += 1;
+   // ESP_LOGI("INFO", "SpaceGap Builder Cursor2 = %d", sharp_builder->cursor);
     return ESP_OK;
 }
 
@@ -74,6 +90,8 @@ static esp_err_t sharp_builder_make_logic1(ir_builder_t *builder)
 
 static esp_err_t sharp_builder_make_end(ir_builder_t *builder)
 {
+    int i=1;
+    i++;
     sharp_builder_t *sharp_builder = __containerof(builder, sharp_builder_t, parent);
     sharp_builder->buffer[sharp_builder->cursor].level0 = !sharp_builder->inverse;
     sharp_builder->buffer[sharp_builder->cursor].duration0 = sharp_builder->ending_code_high_ticks;
@@ -92,39 +110,48 @@ static esp_err_t sharp_build_frame(ir_builder_t *builder, uint32_t address, uint
     sharp_builder->cursor = 0;
    // builder->make_head(builder);
     // LSB -> MSB
-    for (int j = 0; j<2; j++) {
-        for (int i = 0; i < 5; i++) {
-            if (address & (1 << i)) {
-                builder->make_logic1(builder);
-            } else {
-                builder->make_logic0(builder);
-            }
-
+    for (int i = 0; i < 5; i++) {
+        if (address & (1 << i)) {
+            builder->make_logic1(builder);
+        } else {
+            builder->make_logic0(builder);
         }
-        for (int i = 0; i < 8; i++) {
-            if (command & (1 << i)) {
-                builder->make_logic1(builder);
-            } else {
-                builder->make_logic0(builder);
-            }
-        }
-        if(j==0){
-            builder->make_logic1(builder);  //expansion bit
-            builder->make_logic0(builder);  //check bit 
-        }
-        else {
-            builder->make_logic0(builder);  //expansion bit
-            builder->make_logic1(builder);  //check bit       
-        }
-        
-        builder->make_end(builder);
-        ESP_LOGI("INFO", "This is %d time called", j);
-        sharp_builder_make_spacegap(builder);
-        command ^= 0xFF;
-        ESP_LOGI("INFO", "This is %d time called", sharp_builder->cursor);
     }
-
-    ESP_LOGI("INFO", "FRAME BUILDED");
+    for (int i = 0; i < 8; i++) {
+        if (command & (1 << i)) {
+            builder->make_logic1(builder);
+        } else {
+            builder->make_logic0(builder);
+        }
+    }
+    builder->make_logic1(builder);  //expansion bit
+    builder->make_logic0(builder);  //check bit 
+    builder->make_end(builder);
+    builder->make_message_space(builder);
+    //ESP_LOGI(TAG, "build Code --- addr: 0x%04x cmd: 0x%04x", address, command);
+    command ^= 0xFF;
+   // sharp_builder->cursor = 0;
+    for (int i = 0; i < 5; i++) {
+        if (address & (1 << i)) {
+            builder->make_logic1(builder);
+        } else {
+            builder->make_logic0(builder);
+        }
+    }
+    for (int i = 0; i < 8; i++) {
+        if (command & (1 << i)) {
+            builder->make_logic1(builder);
+        } else {
+            builder->make_logic0(builder);
+        }
+    }           
+    builder->make_logic0(builder);  //expansion bit
+    builder->make_logic1(builder);  //check bit
+    builder->make_end(builder);       
+    //ESP_LOGI(TAG, "build Code --- addr: 0x%04x cmd: 0x%04x", address, command);
+   
+    ESP_LOGI("INFO", "This is %d time called", sharp_builder->cursor);
+   // ESP_LOGI("INFO", "FRAME BUILDED");
     return ESP_OK;
 }
 
@@ -180,7 +207,7 @@ ir_builder_t *ir_builder_rmt_new_sharp(const ir_builder_config_t *config)
     SHARP_CHECK(rmt_get_counter_clock((rmt_channel_t)config->dev_hdl, &counter_clk_hz) == ESP_OK,
               "get rmt counter clock failed", err, NULL);
     float ratio = (float)counter_clk_hz / 1e6;
-    //sharp_builder->leading_code_high_ticks = (uint32_t)(ratio * SHARP_LEADING_CODE_HIGH_US);
+    //sharp_builder->msggap_high_ticks = (uint32_t)(ratio * SHARP_ENDING_CODE_HIGH_US);
     sharp_builder->msggap_low_ticks = (uint32_t)(ratio * SHARP_DELAY_LOW_US);
     sharp_builder->repeat_code_high_ticks = (uint32_t)(ratio * SHARP_REPEAT_CODE_HIGH_US);
     sharp_builder->repeat_code_low_ticks = (uint32_t)(ratio * SHARP_REPEAT_CODE_LOW_US);
@@ -194,6 +221,7 @@ ir_builder_t *ir_builder_rmt_new_sharp(const ir_builder_config_t *config)
     sharp_builder->parent.make_logic0 = sharp_builder_make_logic0;
     sharp_builder->parent.make_logic1 = sharp_builder_make_logic1;
     sharp_builder->parent.make_end = sharp_builder_make_end;
+    sharp_builder->parent.make_message_space = sharp_builder_make_message_space;
     sharp_builder->parent.build_frame = sharp_build_frame;
     sharp_builder->parent.build_repeat_frame = sharp_build_repeat_frame;
     sharp_builder->parent.get_result = sharp_builder_get_result;

@@ -1,3 +1,16 @@
+//==============================================================================
+//                    DDDD   EEEEE  N   N   OOO   N   N
+//                     D  D  E      NN  N  O   O  NN  N
+//                     D  D  EEE    N N N  O   O  N N N
+//                     D  D  E      N  NN  O   O  N  NN
+//                    DDDD   EEEEE  N   N   OOO   N   N
+//==============================================================================
+//                       SSSS  H   H   AAA   RRRR   PPPP
+//                      S      H   H  A   A  R   R  P   P
+//                       SSS   HHHHH  AAAAA  RRRR   PPPP
+//                          S  H   H  A   A  R  R   P
+//                      SSSS   H   H  A   A  R   R  P
+//==============================================================================
 #include <stdlib.h>
 #include <sys/cdefs.h>
 #include "esp_log.h"
@@ -23,7 +36,7 @@ static const char *TAG = "sharp_parser";
 typedef struct {
     ir_parser_t parent;
     uint32_t flags;
-    //uint32_t leading_code_high_ticks;
+    uint32_t msggap_high_ticks;
     uint32_t msggap_low_ticks;
     uint32_t repeat_code_high_ticks;
     uint32_t repeat_code_low_ticks;
@@ -49,9 +62,11 @@ static inline bool sharp_check_in_range(uint32_t raw_ticks, uint32_t target_tick
 static bool sharp_parse_spacegap(sharp_parser_t *sharp_parser)
 {
     //sharp_parser->cursor = 0;
+    //ESP_LOGI("INFO SPACEGAP", "spacegap called");
+  //  ESP_LOGI("INFO", "SpaceGap Parser Cursor = %d", sharp_parser->cursor);
     rmt_item32_t item = sharp_parser->buffer[sharp_parser->cursor];
     bool ret = (item.level0 == sharp_parser->inverse) && (item.level1 != sharp_parser->inverse) &&
-               //sharp_check_in_range(item.duration0, sharp_parser->leading_code_high_ticks, sharp_parser->margin_ticks) &&
+               sharp_check_in_range(item.duration0, sharp_parser->msggap_high_ticks, sharp_parser->margin_ticks) &&
                sharp_check_in_range(item.duration1, sharp_parser->msggap_low_ticks, sharp_parser->margin_ticks);
     sharp_parser->cursor += 1;
     return ret;
@@ -112,7 +127,7 @@ static esp_err_t sharp_parser_input(ir_parser_t *parser, void *raw_data, uint32_
     SHARP_CHECK(raw_data, "input data can't be null", err, ESP_ERR_INVALID_ARG);
     sharp_parser->buffer = raw_data;
     // Data Frame costs 34 items and Repeat Frame costs 2 items
-    ESP_LOGI("INFO", "Length = %d", length);
+   // ESP_LOGI("INFO", "Length = %d", length);
     if (length == SHARP_DATA_FRAME_RMT_WORDS) {
         sharp_parser->repeat = false;
     } else if (length == SHARP_REPEAT_FRAME_RMT_WORDS) {
@@ -132,17 +147,16 @@ static esp_err_t sharp_parser_get_scan_code(ir_parser_t *parser, uint32_t *addre
     uint32_t cmd = 0;
     uint32_t addrI = 0;
     uint32_t cmdI = 0;
+    rmt_item32_t *items = NULL;
+    size_t length = 0;
+   // bool repeat = false;
+    RingbufHandle_t rb = NULL;
     bool logic_value = false;
+    bool check = false;
     sharp_parser_t *sharp_parser = __containerof(parser, sharp_parser_t, parent);
+    sharp_parser->cursor = 0;
     SHARP_CHECK(address && command && repeat, "address, command and repeat can't be null", out, ESP_ERR_INVALID_ARG);
-    if (sharp_parser->repeat) {
-        if (sharp_parse_repeat_frame(sharp_parser)) {
-            *address = sharp_parser->last_address;
-            *command = sharp_parser->last_command;
-            *repeat = true;
-            ret = ESP_OK;
-        }
-    } else {
+   
         for (int i = 0; i < 5; i++) {
             if (sharp_parse_logic(parser, &logic_value) == ESP_OK) {
                 addr |= (logic_value << i);
@@ -153,21 +167,33 @@ static esp_err_t sharp_parser_get_scan_code(ir_parser_t *parser, uint32_t *addre
                 cmd |= (logic_value << i);
             }
         }
-        if(sharp_parse_spacegap(sharp_parser)) {
-            return ret;
-        }
-        for (int i = 0; i < 5; i++) {
-            if (sharp_parse_logic(parser, &logic_value) == ESP_OK) {
-                addrI |= (logic_value << i);
+        /*
+        items = (rmt_item32_t *) xRingbufferReceive(rb, &length, portMAX_DELAY);
+        ESP_LOGI("INFO"," Received raw length = %d", length);
+        if (items) {
+            length /= 4; // one RMT = 4 Bytes
+            ESP_LOGI("INFO"," Received RMT BYTE length = %d", length);
+            if (sharp_parser_input(parser, items, length) == ESP_OK) {
+
+                for (int i = 0; i < 5; i++) {
+                    if (sharp_parse_logic(parser, &logic_value) == ESP_OK) {
+                        addrI |= (logic_value << i);
+                    }
+                }
+                for (int i = 0; i < 10; i++) {
+                    if (sharp_parse_logic(parser, &logic_value) == ESP_OK) {
+                        cmdI |= (logic_value << i);
+                    }
+                }
             }
         }
-        for (int i = 0; i < 10; i++) {
-            if (sharp_parse_logic(parser, &logic_value) == ESP_OK) {
-                cmdI |= (logic_value << i);
-            }
-        }
+        */
+        ESP_LOGI(TAG, "Scan Code --- addr: 0x%04x cmd: 0x%04x", addr, cmd);
         ESP_LOGI(TAG, "Scan Code --- addr: 0x%04x cmd: 0x%04x", addrI, cmdI);
-        SHARP_CHECK(cmd && (cmdI ^ 0x3FF), "command, inverted command can't be equal", out, ESP_ERR_INVALID_ARG);
+        if (cmd == (cmdI ^ 0x3FF)) {
+            check = true;
+        }
+        SHARP_CHECK(check, "command, inverted command can't be equal", out, ESP_ERR_INVALID_ARG);
 
         *address = addr;
         *command = cmd;
@@ -176,7 +202,6 @@ static esp_err_t sharp_parser_get_scan_code(ir_parser_t *parser, uint32_t *addre
         sharp_parser->last_address = addr;
         sharp_parser->last_command = cmd;
         ret = ESP_OK;
-    }
 out:
     return ret;
     ESP_LOGI("INFO", "ERROR in inverted data");
@@ -206,8 +231,8 @@ ir_parser_t *ir_parser_rmt_new_sharp(const ir_parser_config_t *config)
     SHARP_CHECK(rmt_get_counter_clock((rmt_channel_t)config->dev_hdl, &counter_clk_hz) == ESP_OK,
               "get rmt counter clock failed", err, NULL);
     float ratio = (float)counter_clk_hz / 1e6;
-    //sharp_parser->leading_code_high_ticks = (uint32_t)(ratio * SHARP_LEADING_CODE_HIGH_US);
-    //sharp_parser->leading_code_low_ticks = (uint32_t)(ratio * SHARP_LEADING_CODE_LOW_US);
+    sharp_parser->msggap_high_ticks = (uint32_t)(ratio * SHARP_ENDING_CODE_HIGH_US);
+    sharp_parser->msggap_low_ticks = (uint32_t)(ratio * SHARP_DELAY_LOW_US);
     sharp_parser->repeat_code_high_ticks = (uint32_t)(ratio * SHARP_REPEAT_CODE_HIGH_US);
     sharp_parser->repeat_code_low_ticks = (uint32_t)(ratio * SHARP_REPEAT_CODE_LOW_US);
     sharp_parser->payload_logic0_high_ticks = (uint32_t)(ratio * SHARP_PAYLOAD_ZERO_HIGH_US);

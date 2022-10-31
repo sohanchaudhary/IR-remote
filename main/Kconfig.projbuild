@@ -87,7 +87,7 @@ menu "Example Configuration"
 
     config EXAMPLE_RMT_RX_GPIO
         int "RMT RX GPIO"
-        default 19
+        default 8
         help
             Set the GPIO number used for receiving the RMT signal.
 

@@ -11,4 +11,5 @@ This driver is being developed for continuous monitoring of the IR signals and t
 7. GREE 
 8. PANASONIC
 9. DISH
-10. SHARP (In Progress)
+10. JVC
+11. SHARP (In Progress)
