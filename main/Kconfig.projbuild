@@ -16,6 +16,12 @@ menu "Example Configuration"
             help
                 SHARP is a kind of Pulse Distance Protocol.
                 It uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.
+        
+        config EXAMPLE_IR_PROTOCOL_LEGO
+            bool "LEGO"
+            help
+                LEGO is a kind of Pulse Distance Protocol.
+                It uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.
 
         config EXAMPLE_IR_PROTOCOL_NEC
             bool "NEC"

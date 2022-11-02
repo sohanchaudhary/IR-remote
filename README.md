@@ -13,3 +13,4 @@ This driver is being developed for continuous monitoring of the IR signals and t
 9. DISH
 10. JVC
 11. SHARP (In Progress)
+12. LEGO (In Progress)

@@ -337,6 +337,15 @@ ir_builder_t *ir_builder_rmt_new_sharp(const ir_builder_config_t *config);
 ir_builder_t *ir_builder_rmt_new_dish(const ir_builder_config_t *config);
 
 /**
+* @brief Creat a LEGO protocol builder
+*
+* @param config: configuration of LEGO builder
+* @return
+*      Handle of LEGO builder or NULL
+*/
+ir_builder_t *ir_builder_rmt_new_lego(const ir_builder_config_t *config);
+
+/**
 * @brief Creat a NEC protocol parser
 *
 * @param config: configuration of NEC parser
@@ -416,6 +425,15 @@ ir_parser_t *ir_parser_rmt_new_sharp(const ir_parser_config_t *config);
 *      Handle of DISH parser or NULL
 */
 ir_parser_t *ir_parser_rmt_new_dish(const ir_parser_config_t *config);
+
+/**
+* @brief Creat a LEGO protocol parser
+*
+* @param config: configuration of LEGO parser
+* @return
+*      Handle of LEGO parser or NULL
+*/
+ir_parser_t *ir_parser_rmt_new_lego(const ir_parser_config_t *config);
 
 #ifdef __cplusplus
 }

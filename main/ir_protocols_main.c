@@ -86,7 +86,24 @@ static void example_ir_rx_task(void *arg)
 
     rmt_config(&rmt_rx_config);
     rmt_driver_install(example_rx_channel, 2000, 0);
+
+#if CONFIG_EXAMPLE_IR_PROTOCOL_LEGO
+    /**
+     * @brief Default configuration for IR parser
+     *
+     */
+    #define IR_PARSER_DEFAULT_CONFIG(dev) \
+        {                                 \
+            .dev_hdl = dev,               \
+            .flags = 0,                   \
+            .margin_us = 100,             \
+        }
     ir_parser_config_t ir_parser_config = IR_PARSER_DEFAULT_CONFIG((ir_dev_t)example_rx_channel);
+    ESP_LOGI("INFO"," rx parser config OK");
+#else
+    ir_parser_config_t ir_parser_config = IR_PARSER_DEFAULT_CONFIG((ir_dev_t)example_rx_channel);
+#endif
+
     ir_parser_config.flags |= IR_TOOLS_FLAGS_PROTO_EXT; // Using extended IR protocols (both NEC and RC5 have extended version)
     ir_parser_t *ir_parser = NULL;
 
@@ -108,6 +125,8 @@ static void example_ir_rx_task(void *arg)
     ir_parser = ir_parser_rmt_new_sharp(&ir_parser_config);
 #elif CONFIG_EXAMPLE_IR_PROTOCOL_DISH
     ir_parser = ir_parser_rmt_new_dish(&ir_parser_config);
+#elif CONFIG_EXAMPLE_IR_PROTOCOL_LEGO
+    ir_parser = ir_parser_rmt_new_lego(&ir_parser_config);
 #endif
 
     //get RMT RX ringbuffer
@@ -117,12 +136,12 @@ static void example_ir_rx_task(void *arg)
     //ESP_LOGI("INFO", "START");
     rmt_rx_start(example_rx_channel, true);
     while (1) {
-        //items = (rmt_item32_t *) xRingbufferReceive(rb, &length, portMAX_DELAY);
-        items = (rmt_item32_t *) xRingbufferReceive(rb, &length, pdMS_TO_TICKS(0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFUL));
-        ESP_LOGI("INFO"," Received raw length = %d", length);
+        items = (rmt_item32_t *) xRingbufferReceive(rb, &length, portMAX_DELAY);
+        //items = (rmt_item32_t *) xRingbufferReceive(rb, &length, pdMS_TO_TICKS(0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFUL));
+       // ESP_LOGI("INFO"," Received raw length = %d", length);
         if (items) {
             length /= 4; // one RMT = 4 Bytes
-            ESP_LOGI("INFO"," Received RMT BYTE length = %d", length);
+           // ESP_LOGI("INFO"," Received RMT BYTE length = %d", length);
             if (ir_parser->input(ir_parser, items, length) == ESP_OK) {
                 // ESP_LOGI("INFO"," Input ok");
 #if CONFIG_EXAMPLE_IR_PROTOCOL_GREE
@@ -163,7 +182,7 @@ static void example_ir_tx_task(void *arg)
     uint32_t addr1 = 0x50600479;
     uint32_t cmd1 = 0xc0004611;
 #else 
-    uint32_t addr = 0x10;
+    uint32_t addr = 0x1;
     uint32_t cmd = 0x20;
 #endif
 
@@ -196,6 +215,8 @@ static void example_ir_tx_task(void *arg)
     ir_builder = ir_builder_rmt_new_sharp(&ir_builder_config);
 #elif CONFIG_EXAMPLE_IR_PROTOCOL_DISH
     ir_builder = ir_builder_rmt_new_dish(&ir_builder_config);
+#elif CONFIG_EXAMPLE_IR_PROTOCOL_LEGO
+    ir_builder = ir_builder_rmt_new_lego(&ir_builder_config);
 #endif
 
     while (1) {
@@ -207,7 +228,7 @@ static void example_ir_tx_task(void *arg)
         // Send new key code
         ESP_ERROR_CHECK(ir_builder->build_frame(ir_builder, addr, cmd));
         ESP_ERROR_CHECK(ir_builder->get_result(ir_builder, &items, &length));
-        ESP_LOGI("INFO"," transmitted length = %d", length);
+        //ESP_LOGI("INFO"," transmitted length = %d", length);
         //To send data according to the waveform items.
         rmt_write_items(example_tx_channel, items, length, false);
 
@@ -221,7 +242,7 @@ static void example_ir_tx_task(void *arg)
         //To send data according to the waveform items.
         rmt_write_items(example_tx_channel, items, length, false);
 #endif
-#if (!(CONFIG_EXAMPLE_IR_PROTOCOL_GREE | CONFIG_EXAMPLE_IR_PROTOCOL_SHARP))       
+#if (!(CONFIG_EXAMPLE_IR_PROTOCOL_GREE | CONFIG_EXAMPLE_IR_PROTOCOL_SHARP | CONFIG_EXAMPLE_IR_PROTOCOL_LEGO))       
         // Send repeat code
         vTaskDelay(pdMS_TO_TICKS(ir_builder->repeat_period_ms));
         ESP_ERROR_CHECK(ir_builder->build_repeat_frame(ir_builder));

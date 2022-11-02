@@ -2074,6 +2074,16 @@
                     {
                         "children": [],
                         "depends_on": "<choice EXAMPLE_IR_PROTOCOL>",
+                        "help": "LEGO is a kind of Pulse Distance Protocol.\nIt uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.",
+                        "id": "EXAMPLE_IR_PROTOCOL_LEGO",
+                        "name": "EXAMPLE_IR_PROTOCOL_LEGO",
+                        "range": null,
+                        "title": "LEGO",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "<choice EXAMPLE_IR_PROTOCOL>",
                         "help": "NEC is a kind of Pulse Distance Protocol.\nIt uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.",
                         "id": "EXAMPLE_IR_PROTOCOL_NEC",
                         "name": "EXAMPLE_IR_PROTOCOL_NEC",

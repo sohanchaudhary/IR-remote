@@ -139,6 +139,18 @@ extern "C" {
 #define DISH_REPEAT_CODE_LOW_US (6200)
 #define DISH_ENDING_CODE_HIGH_US (400)
 
+/**
+ * @brief Timings for LEGO protocol
+ *
+ */
+#define LEGO_LEADING_CODE_HIGH_US (158)
+#define LEGO_LEADING_CODE_LOW_US (1026)
+#define LEGO_PAYLOAD_ONE_HIGH_US (158)
+#define LEGO_PAYLOAD_ONE_LOW_US (553)
+#define LEGO_PAYLOAD_ZERO_HIGH_US (158)
+#define LEGO_PAYLOAD_ZERO_LOW_US (263)
+#define LEGO_ENDING_CODE_HIGH_US (158)
+
 #ifdef __cplusplus
 }
 #endif
