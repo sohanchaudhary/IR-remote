@@ -28,6 +28,7 @@ static void example_ir_rx_task(void *arg)
 {
     uint32_t addr = 0;
     uint32_t cmd = 0;
+    uint32_t cksum = 0;
     uint32_t ftr = 0;
     size_t length = 0;
     bool repeat = false;
@@ -85,7 +86,7 @@ static void example_ir_rx_task(void *arg)
 #endif
 
     rmt_config(&rmt_rx_config);
-    rmt_driver_install(example_rx_channel, 2000, 0);
+    rmt_driver_install(example_rx_channel, 3000, 0);
 
 #if CONFIG_EXAMPLE_IR_PROTOCOL_LEGO
     /**
@@ -99,21 +100,22 @@ static void example_ir_rx_task(void *arg)
             .margin_us = 100,             \
         }
     ir_parser_config_t ir_parser_config = IR_PARSER_DEFAULT_CONFIG((ir_dev_t)example_rx_channel);
-    ESP_LOGI("INFO"," rx parser config OK");
+    ESP_LOGI("INFO","LEGO rx parser config OK");
 #else
     ir_parser_config_t ir_parser_config = IR_PARSER_DEFAULT_CONFIG((ir_dev_t)example_rx_channel);
+    ESP_LOGI("INFO","Other than LEGO rx parser config OK");
 #endif
 
     ir_parser_config.flags |= IR_TOOLS_FLAGS_PROTO_EXT; // Using extended IR protocols (both NEC and RC5 have extended version)
     ir_parser_t *ir_parser = NULL;
 
-#if CONFIG_EXAMPLE_IR_PROTOCOL_NEC | CONFIG_EXAMPLE_IR_PROTOCOL_LGTV
+#if CONFIG_EXAMPLE_IR_PROTOCOL_NEC | CONFIG_EXAMPLE_IR_PROTOCOL_LGTV | CONFIG_EXAMPLE_IR_PROTOCOL_TOSHIBA_TV
     ir_parser = ir_parser_rmt_new_nec(&ir_parser_config);
 #elif CONFIG_EXAMPLE_IR_PROTOCOL_SONY
     ir_parser = ir_parser_rmt_new_sony(&ir_parser_config);
 #elif CONFIG_EXAMPLE_IR_PROTOCOL_RC5
     ir_parser = ir_parser_rmt_new_rc5(&ir_parser_config);
-#elif CONFIG_EXAMPLE_IR_PROTOCOL_SAMSUNG
+#elif CONFIG_EXAMPLE_IR_PROTOCOL_SAMSUNG | CONFIG_EXAMPLE_IR_PROTOCOL_SAMSUNGAC
     ir_parser = ir_parser_rmt_new_samsung(&ir_parser_config);  
 #elif CONFIG_EXAMPLE_IR_PROTOCOL_LGAC
     ir_parser = ir_parser_rmt_new_lgac(&ir_parser_config);  
@@ -127,6 +129,10 @@ static void example_ir_rx_task(void *arg)
     ir_parser = ir_parser_rmt_new_dish(&ir_parser_config);
 #elif CONFIG_EXAMPLE_IR_PROTOCOL_LEGO
     ir_parser = ir_parser_rmt_new_lego(&ir_parser_config);
+#elif CONFIG_EXAMPLE_IR_PROTOCOL_TOSHIBA_AC_72
+    ir_parser = ir_parser_rmt_new_toshibaAC(&ir_parser_config);
+#elif CONFIG_EXAMPLE_IR_PROTOCOL_JVC
+    ir_parser = ir_parser_rmt_new_jvc(&ir_parser_config);
 #endif
 
     //get RMT RX ringbuffer
@@ -137,13 +143,12 @@ static void example_ir_rx_task(void *arg)
     rmt_rx_start(example_rx_channel, true);
     while (1) {
         items = (rmt_item32_t *) xRingbufferReceive(rb, &length, portMAX_DELAY);
-        //items = (rmt_item32_t *) xRingbufferReceive(rb, &length, pdMS_TO_TICKS(0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFUL));
        // ESP_LOGI("INFO"," Received raw length = %d", length);
         if (items) {
             length /= 4; // one RMT = 4 Bytes
-           // ESP_LOGI("INFO"," Received RMT BYTE length = %d", length);
+            ESP_LOGI("INFO"," Received RMT BYTE length = %d", length);
             if (ir_parser->input(ir_parser, items, length) == ESP_OK) {
-                // ESP_LOGI("INFO"," Input ok");
+                 ESP_LOGI("INFO"," Input ok");
 #if CONFIG_EXAMPLE_IR_PROTOCOL_GREE
                 if (ir_parser->get_scan_code_gree(ir_parser, &addr, &ftr, &cmd, &repeat) == ESP_OK) {
                     //ESP_LOGI("INFO"," scan code OK");
@@ -151,6 +156,10 @@ static void example_ir_rx_task(void *arg)
                 }
                 else {
                     ESP_LOGI("INFO", "scan code NOT OK");
+                }
+#elif CONFIG_EXAMPLE_IT_PROTOCOL_TOSHIBA_AC_72
+                if (ir_parser->get_scan_code_toshibaAC(ir_parser, &addr, &cmd, &cksum, &repeat) == ESP_OK) {
+                    ESP_LOGI(TAG, "Scan Code %s --- addr: 0x%04x cmd: 0x%04x checksum: 0x%04x", repeat ? "(repeat)" : "", addr, cmd, cksum);
                 }
 #else
                 if (ir_parser->get_scan_code(ir_parser, &addr, &cmd, &repeat) == ESP_OK) {
@@ -181,8 +190,15 @@ static void example_ir_tx_task(void *arg)
     uint32_t cmd = 0x40004211;
     uint32_t addr1 = 0x50600479;
     uint32_t cmd1 = 0xc0004611;
+#elif CONFIG_EXAMPLE_IR_PROTOCOL_TOSHIBA_AC_72
+    uint32_t addr = 0x50200471;
+    uint32_t cmd = 0x40004211;
+    uint32_t cksum = 0x11;
+    uint32_t addrR = 0xF20D03FC;
+    uint32_t cmdR = 0x01504000;
+    uint32_t cksumR = 0x11;
 #else 
-    uint32_t addr = 0x1;
+    uint32_t addr = 0x10;
     uint32_t cmd = 0x20;
 #endif
 
@@ -197,11 +213,11 @@ static void example_ir_tx_task(void *arg)
     ir_builder_config_t ir_builder_config = IR_BUILDER_DEFAULT_CONFIG((ir_dev_t)example_tx_channel);
     ir_builder_config.flags |= IR_TOOLS_FLAGS_PROTO_EXT; // Using extended IR protocols (both NEC and RC5 have extended version)
 
-#if CONFIG_EXAMPLE_IR_PROTOCOL_NEC | CONFIG_EXAMPLE_IR_PROTOCOL_LGTV
+#if CONFIG_EXAMPLE_IR_PROTOCOL_NEC | CONFIG_EXAMPLE_IR_PROTOCOL_LGTV | CONFIG_EXAMPLE_IR_PROTOCOL_TOSHIBA_TV
     ir_builder = ir_builder_rmt_new_nec(&ir_builder_config);
 #elif CONFIG_EXAMPLE_IR_PROTOCOL_RC5
     ir_builder = ir_builder_rmt_new_rc5(&ir_builder_config);
-#elif CONFIG_EXAMPLE_IR_PROTOCOL_SAMSUNG
+#elif CONFIG_EXAMPLE_IR_PROTOCOL_SAMSUNG | CONFIG_EXAMPLE_IR_PROTOCOL_SAMSUNGAC
     ir_builder = ir_builder_rmt_new_samsung(&ir_builder_config);
 #elif CONFIG_EXAMPLE_IR_PROTOCOL_SONY_12 | CONFIG_EXAMPLE_IR_PROTOCOL_SONY_15 | CONFIG_EXAMPLE_IR_PROTOCOL_SONY_20
     ir_builder = ir_builder_rmt_new_sony(&ir_builder_config);
@@ -217,6 +233,10 @@ static void example_ir_tx_task(void *arg)
     ir_builder = ir_builder_rmt_new_dish(&ir_builder_config);
 #elif CONFIG_EXAMPLE_IR_PROTOCOL_LEGO
     ir_builder = ir_builder_rmt_new_lego(&ir_builder_config);
+#elif CONFIG_EXAMPLE_IR_PROTOCOL_TOSHIBA_AC_72
+    ir_builder = ir_builder_rmt_new_toshibaAC(&ir_builder_config);
+#elif CONFIG_EXAMPLE_IR_PROTOCOL_JVC
+    ir_builder = ir_builder_rmt_new_jvc(&ir_builder_config);
 #endif
 
     while (1) {
@@ -224,13 +244,20 @@ static void example_ir_tx_task(void *arg)
         vTaskDelay(pdMS_TO_TICKS(20000));
 #endif
         vTaskDelay(pdMS_TO_TICKS(2000));
+#if CONFIG_EXAMPLE_IR_PROTOCOL_TOSHIBA_AC_72
+        ESP_LOGI(TAG, "Send command 0x%x to address 0x%x with checksum 0x%x", cmd, addr, cksum);
+        // Send new key code
+        ESP_ERROR_CHECK(ir_builder->build_frame_toshibaAC(ir_builder, addr, cmd, cksum, addrR, cmdR, cksumR));
+#else
         ESP_LOGI(TAG, "Send command 0x%x to address 0x%x", cmd, addr);
         // Send new key code
         ESP_ERROR_CHECK(ir_builder->build_frame(ir_builder, addr, cmd));
+#endif
         ESP_ERROR_CHECK(ir_builder->get_result(ir_builder, &items, &length));
-        //ESP_LOGI("INFO"," transmitted length = %d", length);
+        ESP_LOGI("INFO"," transmitted length = %d", length);
         //To send data according to the waveform items.
         rmt_write_items(example_tx_channel, items, length, false);
+        ESP_LOGI("INFO"," data written on channel");
 
 #if CONFIG_EXAMPLE_IR_PROTOCOL_GREE
         vTaskDelay(pdMS_TO_TICKS(20000));

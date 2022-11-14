@@ -128,7 +128,9 @@ struct ir_builder_s {
     *      - ESP_FAIL: Build a complete frame failed because some error occurred
     */
     esp_err_t (*build_frame)(ir_builder_t *builder, uint32_t address, uint32_t command);
-    
+    //   ONLY FOR TOSHIBA AC PROTOCOL (72 bit)
+    esp_err_t (*build_frame_toshibaAC)(ir_builder_t *builder, uint32_t address, uint32_t command, uint32_t checksum, uint32_t addressR, uint32_t commandR, uint32_t cksumR);
+
     /**
     * @brief Build a repeat frame
     *
@@ -199,7 +201,10 @@ struct ir_parser_s {
     *      - ESP_FAIL: Get scan code failed because some error occurred
     */
     esp_err_t (*get_scan_code)(ir_parser_t *parser, uint32_t *address, uint32_t *command, bool *repeat);
+    // ONLY GREE AC PROTOCOL
     esp_err_t (*get_scan_code_gree)(ir_parser_t *parser, uint32_t *address, uint32_t *footer, uint32_t *command, bool *repeat);
+     // Toshiba AC (72 bit)
+    esp_err_t (*get_scan_code_toshibaAC)(ir_parser_t *parser, uint32_t *address, uint32_t *command, uint32_t *checksum, bool *repeat);
 
     /**
     * @brief Free resources used by IR parser
@@ -239,7 +244,7 @@ typedef struct {
  */
 #define IR_BUILDER_DEFAULT_CONFIG(dev) \
     {                                  \
-        .buffer_size = 140,           \
+        .buffer_size = 160,           \
         .dev_hdl = dev,                \
         .flags = 0,                    \
     }
@@ -319,6 +324,15 @@ ir_builder_t *ir_builder_rmt_new_gree(const ir_builder_config_t *config);
 ir_builder_t *ir_builder_rmt_new_panasonic(const ir_builder_config_t *config);
 
 /**
+* @brief Creat a JVC protocol builder
+*
+* @param config: configuration of JVC builder
+* @return
+*      Handle of JVC builder or NULL
+*/
+ir_builder_t *ir_builder_rmt_new_jvc(const ir_builder_config_t *config);
+
+/**
 * @brief Creat a SHARP protocol builder
 *
 * @param config: configuration of SHARP builder
@@ -346,6 +360,15 @@ ir_builder_t *ir_builder_rmt_new_dish(const ir_builder_config_t *config);
 ir_builder_t *ir_builder_rmt_new_lego(const ir_builder_config_t *config);
 
 /**
+* @brief Creat a TOSHIBAAC protocol builder
+*
+* @param config: configuration of TOSHIBAAC builder
+* @return
+*      Handle of TOSHIBAAC builder or NULL
+*/
+ir_builder_t *ir_builder_rmt_new_toshibaAC(const ir_builder_config_t *config);
+
+/**
 * @brief Creat a NEC protocol parser
 *
 * @param config: configuration of NEC parser
@@ -353,6 +376,15 @@ ir_builder_t *ir_builder_rmt_new_lego(const ir_builder_config_t *config);
 *      Handle of NEC parser or NULL
 */
 ir_parser_t *ir_parser_rmt_new_nec(const ir_parser_config_t *config);
+
+/**
+* @brief Creat a TOSHIBA protocol parser
+*
+* @param config: configuration of TOSHIBA parser
+* @return
+*      Handle of TOSHIBA parser or NULL
+*/
+ir_parser_t *ir_parser_rmt_new_toshibaAC(const ir_parser_config_t *config);
 
 /**
 * @brief Creat a RC5 protocol parser
@@ -434,6 +466,15 @@ ir_parser_t *ir_parser_rmt_new_dish(const ir_parser_config_t *config);
 *      Handle of LEGO parser or NULL
 */
 ir_parser_t *ir_parser_rmt_new_lego(const ir_parser_config_t *config);
+
+/**
+* @brief Creat a JVC protocol parser
+*
+* @param config: configuration of JVC parser
+* @return
+*      Handle of JVC parser or NULL
+*/
+ir_parser_t *ir_parser_rmt_new_jvc(const ir_parser_config_t *config);
 
 #ifdef __cplusplus
 }

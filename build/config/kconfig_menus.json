@@ -2064,6 +2064,16 @@
                     {
                         "children": [],
                         "depends_on": "<choice EXAMPLE_IR_PROTOCOL>",
+                        "help": "TOSHIBA_AC_72 is a kind of Pulse Distance Protocol.\nIt uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.",
+                        "id": "EXAMPLE_IR_PROTOCOL_TOSHIBA_AC_72",
+                        "name": "EXAMPLE_IR_PROTOCOL_TOSHIBA_AC_72",
+                        "range": null,
+                        "title": "TOSHIBA_AC_72",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "<choice EXAMPLE_IR_PROTOCOL>",
                         "help": "SHARP is a kind of Pulse Distance Protocol.\nIt uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.",
                         "id": "EXAMPLE_IR_PROTOCOL_SHARP",
                         "name": "EXAMPLE_IR_PROTOCOL_SHARP",
@@ -2084,6 +2094,16 @@
                     {
                         "children": [],
                         "depends_on": "<choice EXAMPLE_IR_PROTOCOL>",
+                        "help": "TOSHIBA_TV is a kind of Pulse Distance Protocol.\nIt uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.",
+                        "id": "EXAMPLE_IR_PROTOCOL_TOSHIBA_TV",
+                        "name": "EXAMPLE_IR_PROTOCOL_TOSHIBA_TV",
+                        "range": null,
+                        "title": "TOSHIBA_TV",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "<choice EXAMPLE_IR_PROTOCOL>",
                         "help": "NEC is a kind of Pulse Distance Protocol.\nIt uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.",
                         "id": "EXAMPLE_IR_PROTOCOL_NEC",
                         "name": "EXAMPLE_IR_PROTOCOL_NEC",
@@ -2099,6 +2119,16 @@
                         "name": "EXAMPLE_IR_PROTOCOL_PANASONIC",
                         "range": null,
                         "title": "PANASONIC",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "<choice EXAMPLE_IR_PROTOCOL>",
+                        "help": "JVC is a kind of Pulse Distance Protocol.\nIt uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.",
+                        "id": "EXAMPLE_IR_PROTOCOL_JVC",
+                        "name": "EXAMPLE_IR_PROTOCOL_JVC",
+                        "range": null,
+                        "title": "JVC",
                         "type": "bool"
                     },
                     {
@@ -2129,6 +2159,16 @@
                         "name": "EXAMPLE_IR_PROTOCOL_SAMSUNG",
                         "range": null,
                         "title": "SAMSUNG",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "<choice EXAMPLE_IR_PROTOCOL>",
+                        "help": "SAMSUNGAC is a kind of Pulse Distance Protocol.\nIt uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.",
+                        "id": "EXAMPLE_IR_PROTOCOL_SAMSUNGAC",
+                        "name": "EXAMPLE_IR_PROTOCOL_SAMSUNGAC",
+                        "range": null,
+                        "title": "SAMSUNGAC",
                         "type": "bool"
                     },
                     {

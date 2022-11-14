@@ -10,5 +10,11 @@
     ],
     "idf.portWin": "COM8",
     "idf.pythonBinPathWin": "C:\\Users\\sohan\\.espressif\\python_env\\idf4.4_py3.8_env\\Scripts\\python.exe",
-    "idf.toolsPathWin": "C:\\Users\\sohan\\.espressif"
+    "idf.toolsPathWin": "C:\\Users\\sohan\\.espressif",
+    "files.associations": {
+        "*.ipp": "c",
+        "functional": "c",
+        "string_view": "c",
+        "regex": "c"
+    }
 }

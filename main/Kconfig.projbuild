@@ -11,6 +11,12 @@ menu "Example Configuration"
                 GREE is a kind of Pulse Distance Protocol.
                 It uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.
 
+        config EXAMPLE_IR_PROTOCOL_TOSHIBA_AC_72
+            bool "TOSHIBA_AC_72"
+            help
+                TOSHIBA_AC_72 is a kind of Pulse Distance Protocol.
+                It uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.
+
         config EXAMPLE_IR_PROTOCOL_SHARP
             bool "SHARP"
             help
@@ -23,6 +29,12 @@ menu "Example Configuration"
                 LEGO is a kind of Pulse Distance Protocol.
                 It uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.
 
+        config EXAMPLE_IR_PROTOCOL_TOSHIBA_TV
+            bool "TOSHIBA_TV"
+            help
+                TOSHIBA_TV is a kind of Pulse Distance Protocol.
+                It uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.
+
         config EXAMPLE_IR_PROTOCOL_NEC
             bool "NEC"
             help
@@ -33,6 +45,12 @@ menu "Example Configuration"
             bool "PANASONIC"
             help
                 PANASONIC is a kind of Pulse Distance Protocol.
+                It uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.
+
+        config EXAMPLE_IR_PROTOCOL_JVC
+            bool "JVC"
+            help
+                JVC is a kind of Pulse Distance Protocol.
                 It uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.
 
         config EXAMPLE_IR_PROTOCOL_DISH
@@ -53,6 +71,12 @@ menu "Example Configuration"
                 SAMSUNG is a kind of Pulse Distance Protocol.
                 It uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.       
         
+        config EXAMPLE_IR_PROTOCOL_SAMSUNGAC
+            bool "SAMSUNGAC"
+            help
+                SAMSUNGAC is a kind of Pulse Distance Protocol.
+                It uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.       
+
         config EXAMPLE_IR_PROTOCOL_LGAC
             bool "LGAC"
             help

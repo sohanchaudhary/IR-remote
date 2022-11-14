@@ -1,3 +1,10 @@
+//==============================================================================
+//              SSSS   AAA    MMM    SSSS  U   U  N   N   GGGG
+//             S      A   A  M M M  S      U   U  NN  N  G
+//              SSS   AAAAA  M M M   SSS   U   U  N N N  G  GG
+//                 S  A   A  M   M      S  U   U  N  NN  G   G
+//             SSSS   A   A  M   M  SSSS    UUU   N   N   GGG
+//==============================================================================
 /*******************
 SAMSUNG IR Protocol supported to TV and projector and repeat code supported
 http://techiesms.blogspot.com/2016/01/ir-protocol-decoding-and-transmiting.html
@@ -112,6 +119,7 @@ static esp_err_t samsung_build_frame(ir_builder_t *builder, uint32_t address, ui
         SAMSUNG_CHECK(low_byte == (~high_byte & 0xFF), "command not match standard SAMSUNG protocol", err, ESP_ERR_INVALID_ARG);
     }
     builder->make_head(builder);
+#if CONFIG_EXAMPLE_IR_PROTOCOL_SAMSUNG
     // LSB -> MSB
     for (int i = 0; i < 16; i++) {
         if (address & (1 << i)) {
@@ -127,6 +135,22 @@ static esp_err_t samsung_build_frame(ir_builder_t *builder, uint32_t address, ui
             builder->make_logic0(builder);
         }
     }
+#elif CONFIG_EXAMPLE_IR_PROTOCOL_SAMSUNGAC
+    for (int i = 0; i < 10; i++) {
+        if (address & (1 << i)) {
+            builder->make_logic1(builder);
+        } else {
+            builder->make_logic0(builder);
+        }
+    }
+    for (int i = 0; i < 10; i++) {
+        if (command & (1 << i)) {
+            builder->make_logic1(builder);
+        } else {
+            builder->make_logic0(builder);
+        }
+    }
+#endif
     builder->make_end(builder);
     //ESP_LOGI("BUFFER INFO", "%d", samsung_builder->cursor);
     return ESP_OK;

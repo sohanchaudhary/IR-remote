@@ -23,8 +23,12 @@ static const char *TAG = "samsung_parser";
             goto goto_tag;                                                        \
         }                                                                         \
     } while (0)
-
+#if CONFIG_EXAMPLE_IR_PROTOCOL_SAMSUNGAC
+#define SAMSUNG_DATA_FRAME_RMT_WORDS (22)
+#else 
 #define SAMSUNG_DATA_FRAME_RMT_WORDS (34)
+#endif
+
 #define SAMSUNG_REPEAT_FRAME_RMT_WORDS (2)
 
 typedef struct {
@@ -149,6 +153,7 @@ static esp_err_t samsung_parser_get_scan_code(ir_parser_t *parser, uint32_t *add
         }
     } else {
         if (samsung_parse_head(samsung_parser)) {
+            #if CONFIG_EXAMPLE_IR_PROTOCOL_SAMSUNG
             for (int i = 0; i < 16; i++) {
                 if (samsung_parse_logic(parser, &logic_value) == ESP_OK) {
                     addr |= (logic_value << i);
@@ -159,6 +164,18 @@ static esp_err_t samsung_parser_get_scan_code(ir_parser_t *parser, uint32_t *add
                     cmd |= (logic_value << i);
                 }
             }
+            #elif CONFIG_EXAMPLE_IR_PROTOCOL_SAMSUNGAC
+            for (int i = 0; i < 10; i++) {
+                if (samsung_parse_logic(parser, &logic_value) == ESP_OK) {
+                    addr |= (logic_value << i);
+                }
+            }
+            for (int i = 0; i < 10; i++) {
+                if (samsung_parse_logic(parser, &logic_value) == ESP_OK) {
+                    cmd |= (logic_value << i);
+                }
+            }
+            #endif
             *address = addr;
             *command = cmd;
             *repeat = false;
