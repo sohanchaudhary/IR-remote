@@ -157,7 +157,7 @@ static void example_ir_rx_task(void *arg)
                 else {
                     ESP_LOGI("INFO", "scan code NOT OK");
                 }
-#elif CONFIG_EXAMPLE_IT_PROTOCOL_TOSHIBA_AC_72
+#elif CONFIG_EXAMPLE_IR_PROTOCOL_TOSHIBA_AC_72
                 if (ir_parser->get_scan_code_toshibaAC(ir_parser, &addr, &cmd, &cksum, &repeat) == ESP_OK) {
                     ESP_LOGI(TAG, "Scan Code %s --- addr: 0x%04x cmd: 0x%04x checksum: 0x%04x", repeat ? "(repeat)" : "", addr, cmd, cksum);
                 }
@@ -269,7 +269,7 @@ static void example_ir_tx_task(void *arg)
         //To send data according to the waveform items.
         rmt_write_items(example_tx_channel, items, length, false);
 #endif
-#if (!(CONFIG_EXAMPLE_IR_PROTOCOL_GREE | CONFIG_EXAMPLE_IR_PROTOCOL_SHARP | CONFIG_EXAMPLE_IR_PROTOCOL_LEGO))       
+#if (!(CONFIG_EXAMPLE_IR_PROTOCOL_GREE | CONFIG_EXAMPLE_IR_PROTOCOL_SHARP | CONFIG_EXAMPLE_IR_PROTOCOL_LEGO | CONFIG_EXAMPLE_IR_PROTOCOL_TOSHIBA_AC_72))       
         // Send repeat code
         vTaskDelay(pdMS_TO_TICKS(ir_builder->repeat_period_ms));
         ESP_ERROR_CHECK(ir_builder->build_repeat_frame(ir_builder));
@@ -285,6 +285,6 @@ static void example_ir_tx_task(void *arg)
 
 void app_main(void)
 {
-    xTaskCreate(example_ir_rx_task, "ir_rx_task", 2048*4, NULL, 10, NULL);
-    xTaskCreate(example_ir_tx_task, "ir_tx_task", 2048*4, NULL, 10, NULL);
+    xTaskCreate(example_ir_rx_task, "ir_rx_task", 2048*8, NULL, 10, NULL);
+    xTaskCreate(example_ir_tx_task, "ir_tx_task", 2048*8, NULL, 10, NULL);
 }
