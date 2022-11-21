@@ -129,7 +129,7 @@ static void example_ir_rx_task(void *arg)
     ir_parser = ir_parser_rmt_new_dish(&ir_parser_config);
 #elif CONFIG_EXAMPLE_IR_PROTOCOL_LEGO
     ir_parser = ir_parser_rmt_new_lego(&ir_parser_config);
-#elif CONFIG_EXAMPLE_IR_PROTOCOL_TOSHIBA_AC_72
+#elif CONFIG_EXAMPLE_IR_PROTOCOL_TOSHIBA_AC_72 | CONFIG_EXAMPLE_IR_PROTOCOL_TOSHIBAAC50
     ir_parser = ir_parser_rmt_new_toshibaAC(&ir_parser_config);
 #elif CONFIG_EXAMPLE_IR_PROTOCOL_JVC
     ir_parser = ir_parser_rmt_new_jvc(&ir_parser_config);
@@ -197,6 +197,9 @@ static void example_ir_tx_task(void *arg)
     uint32_t addrR = 0xF20D03FC;
     uint32_t cmdR = 0x01504000;
     uint32_t cksumR = 0x11;
+#elif CONFIG_EXAMPLE_IR_PROTOCOL_TOSHIBAAC50
+    uint32_t addr = 0xF20D03;
+    uint32_t cmd = 0x015040;
 #else 
     uint32_t addr = 0x10;
     uint32_t cmd = 0x20;
@@ -233,7 +236,7 @@ static void example_ir_tx_task(void *arg)
     ir_builder = ir_builder_rmt_new_dish(&ir_builder_config);
 #elif CONFIG_EXAMPLE_IR_PROTOCOL_LEGO
     ir_builder = ir_builder_rmt_new_lego(&ir_builder_config);
-#elif CONFIG_EXAMPLE_IR_PROTOCOL_TOSHIBA_AC_72
+#elif CONFIG_EXAMPLE_IR_PROTOCOL_TOSHIBA_AC_72 | CONFIG_EXAMPLE_IR_PROTOCOL_TOSHIBAAC50
     ir_builder = ir_builder_rmt_new_toshibaAC(&ir_builder_config);
 #elif CONFIG_EXAMPLE_IR_PROTOCOL_JVC
     ir_builder = ir_builder_rmt_new_jvc(&ir_builder_config);
@@ -269,7 +272,7 @@ static void example_ir_tx_task(void *arg)
         //To send data according to the waveform items.
         rmt_write_items(example_tx_channel, items, length, false);
 #endif
-#if (!(CONFIG_EXAMPLE_IR_PROTOCOL_GREE | CONFIG_EXAMPLE_IR_PROTOCOL_SHARP | CONFIG_EXAMPLE_IR_PROTOCOL_LEGO | CONFIG_EXAMPLE_IR_PROTOCOL_TOSHIBA_AC_72))       
+#if (!(CONFIG_EXAMPLE_IR_PROTOCOL_GREE | CONFIG_EXAMPLE_IR_PROTOCOL_SHARP | CONFIG_EXAMPLE_IR_PROTOCOL_LEGO | CONFIG_EXAMPLE_IR_PROTOCOL_TOSHIBA_AC_72 | CONFIG_EXAMPLE_IR_PROTOCOL_TOSHIBAAC50))       
         // Send repeat code
         vTaskDelay(pdMS_TO_TICKS(ir_builder->repeat_period_ms));
         ESP_ERROR_CHECK(ir_builder->build_repeat_frame(ir_builder));

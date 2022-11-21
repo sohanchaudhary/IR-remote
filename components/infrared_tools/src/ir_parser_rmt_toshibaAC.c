@@ -25,7 +25,11 @@ static const char *TAG = "toshibaAC_parser";
         }                                                                         \
     } while (0)
 
+#if CONFIG_EXAMPLE_IR_PROTOCOL_TOSHIBAAC72
 #define TOSHIBAAC_DATA_FRAME_RMT_WORDS (148)
+#else
+#define TOSHIBAAC_DATA_FRAME_RMT_WORDS (100)
+#endif
 #define TOSHIBAAC_REPEAT_FRAME_RMT_WORDS (2)
 
 typedef struct {
@@ -35,6 +39,7 @@ typedef struct {
     uint32_t leading_code_low_ticks;
     uint32_t message_high_ticks;
     uint32_t message_low_ticks;
+    uint32_t new_message_low_ticks;
     uint32_t payload_logic0_high_ticks;
     uint32_t payload_logic0_low_ticks;
     uint32_t payload_logic1_high_ticks;
@@ -88,7 +93,7 @@ static bool toshibaAC_parse_message_space(toshibaAC_parser_t *toshibaAC_parser)
     rmt_item32_t item = toshibaAC_parser->buffer[toshibaAC_parser->cursor];
     bool ret = (item.level0 == toshibaAC_parser->inverse) && (item.level1 != toshibaAC_parser->inverse) &&
                toshibaAC_check_in_range(item.duration0, toshibaAC_parser->message_high_ticks, toshibaAC_parser->margin_ticks) &&
-               toshibaAC_check_in_range(item.duration1, toshibaAC_parser->message_low_ticks, toshibaAC_parser->margin_ticks);
+               (toshibaAC_check_in_range(item.duration1, toshibaAC_parser->message_low_ticks, toshibaAC_parser->margin_ticks) | toshibaAC_check_in_range(item.duration1, toshibaAC_parser->new_message_low_ticks, toshibaAC_parser->margin_ticks));
     toshibaAC_parser->cursor += 1;
     return ret;
 }
@@ -128,6 +133,55 @@ static esp_err_t toshibaAC_parser_input(ir_parser_t *parser, void *raw_data, uin
     }
     return ret;
 err:
+    return ret;
+}
+
+static esp_err_t toshibaAC_parser_get_scan_code(ir_parser_t *parser, uint32_t *address, uint32_t *command, bool *repeat)
+{
+    esp_err_t ret = ESP_FAIL;
+    uint32_t addr = 0;
+    uint32_t cmd = 0;
+    uint32_t addrR = 0;
+    uint32_t cmdR = 0;
+    bool logic_value = false;
+    toshibaAC_parser_t *toshibaAC_parser = __containerof(parser, toshibaAC_parser_t, parent);
+    if (toshibaAC_parse_head(toshibaAC_parser)) {
+        for (int i = 23; i >= 0; i--) {
+            if (toshibaAC_parse_logic(parser, &logic_value) == ESP_OK) {
+                addr |= (logic_value << i);
+            }
+        }
+        for (int i = 23; i >= 0; i--) {
+            if (toshibaAC_parse_logic(parser, &logic_value) == ESP_OK) {
+                cmd |= (logic_value << i);
+            }
+        }
+        //ESP_LOGI(TAG, "Scan Code --- addr: 0x%04x cmd: 0x%04x", addr, cmd);
+        if(toshibaAC_parse_message_space(toshibaAC_parser)){
+            if (toshibaAC_parse_head(toshibaAC_parser)) {
+                for (int i = 23; i >= 0; i--) {
+                    if (toshibaAC_parse_logic(parser, &logic_value) == ESP_OK) {
+                        addrR |= (logic_value << i);
+                    }
+                }
+                for (int i = 23; i >= 0; i--) {
+                    if (toshibaAC_parse_logic(parser, &logic_value) == ESP_OK) {
+                        cmdR |= (logic_value << i);
+                    }
+                }
+            }
+        }
+        if ((addr == addrR) && (cmd == cmdR)) {
+            *address = addr;
+            *command = cmd;
+            *repeat = false;
+            // keep it as potential repeat code
+            //toshibaAC_parser->last_address = addr;
+            //toshibaAC_parser->last_command = cmd;
+            ret = ESP_OK;
+        }
+       
+    }
     return ret;
 }
 
@@ -218,6 +272,7 @@ ir_parser_t *ir_parser_rmt_new_toshibaAC(const ir_parser_config_t *config)
     TOSHIBAAC_CHECK(rmt_get_counter_clock((rmt_channel_t)config->dev_hdl, &counter_clk_hz) == ESP_OK,
               "get rmt counter clock failed", err, NULL);
     float ratio = (float)counter_clk_hz / 1e6;
+    #if CONFIG_EXAMPLE_IR_PROTOCOL_TOSHIBAAC72
     toshibaAC_parser->leading_code_high_ticks = (uint32_t)(ratio * TOSHIBAAC_LEADING_CODE_HIGH_US);
     toshibaAC_parser->leading_code_low_ticks = (uint32_t)(ratio * TOSHIBAAC_LEADING_CODE_LOW_US);
     toshibaAC_parser->message_high_ticks = (uint32_t)(ratio * TOSHIBAAC_MESSAGE_SPACE_HIGH_US);
@@ -226,9 +281,21 @@ ir_parser_t *ir_parser_rmt_new_toshibaAC(const ir_parser_config_t *config)
     toshibaAC_parser->payload_logic0_low_ticks = (uint32_t)(ratio * TOSHIBAAC_PAYLOAD_ZERO_LOW_US);
     toshibaAC_parser->payload_logic1_high_ticks = (uint32_t)(ratio * TOSHIBAAC_PAYLOAD_ONE_HIGH_US);
     toshibaAC_parser->payload_logic1_low_ticks = (uint32_t)(ratio * TOSHIBAAC_PAYLOAD_ONE_LOW_US);
+    #else
+    toshibaAC_parser->leading_code_high_ticks = (uint32_t)(ratio * TOSHIBAAC50_LEADING_CODE_HIGH_US);
+    toshibaAC_parser->leading_code_low_ticks = (uint32_t)(ratio * TOSHIBAAC50_LEADING_CODE_LOW_US);
+    toshibaAC_parser->message_high_ticks = (uint32_t)(ratio * TOSHIBAAC50_MESSAGE_SPACE_HIGH_US);
+    toshibaAC_parser->message_low_ticks = (uint32_t)(ratio * TOSHIBAAC50_MESSAGE_SPACE_LOW_US);
+    toshibaAC_parser->new_message_low_ticks = (uint32_t)(ratio * TOSHIBAAC50_NEW_MESSAGE_SPACE_LOW_US);
+    toshibaAC_parser->payload_logic0_high_ticks = (uint32_t)(ratio * TOSHIBAAC50_PAYLOAD_ZERO_HIGH_US);
+    toshibaAC_parser->payload_logic0_low_ticks = (uint32_t)(ratio * TOSHIBAAC50_PAYLOAD_ZERO_LOW_US);
+    toshibaAC_parser->payload_logic1_high_ticks = (uint32_t)(ratio * TOSHIBAAC50_PAYLOAD_ONE_HIGH_US);
+    toshibaAC_parser->payload_logic1_low_ticks = (uint32_t)(ratio * TOSHIBAAC50_PAYLOAD_ONE_LOW_US);
+    #endif
     toshibaAC_parser->margin_ticks = (uint32_t)(ratio * config->margin_us);
     toshibaAC_parser->parent.input = toshibaAC_parser_input;
     toshibaAC_parser->parent.get_scan_code_toshibaAC = toshibaAC_parser_get_scan_code_toshibaAC;
+    toshibaAC_parser->parent.get_scan_code = toshibaAC_parser_get_scan_code;
     toshibaAC_parser->parent.del = toshibaAC_parser_del;
     return &toshibaAC_parser->parent;
 err:

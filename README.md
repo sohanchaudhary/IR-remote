@@ -15,5 +15,5 @@ This driver is being developed for continuous monitoring of the IR signals and t
 11. SHARP (In Progress)
 12. LEGO
 13. SAMSUNG AC
-14. TOSHIBA_AC
+14. TOSHIBA_AC (50, 72 bit Supported)
 15. TOSHIBA_TV

@@ -17,6 +17,12 @@ menu "Example Configuration"
                 TOSHIBA_AC_72 is a kind of Pulse Distance Protocol.
                 It uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.
 
+        config EXAMPLE_IR_PROTOCOL_TOSHIBAAC50
+            bool "TOSHIBAAC50"
+            help
+                TOSHIBAAC is a kind of Pulse Distance Protocol.
+                It uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.
+
         config EXAMPLE_IR_PROTOCOL_SHARP
             bool "SHARP"
             help
