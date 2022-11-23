@@ -306,6 +306,15 @@ ir_builder_t *ir_builder_rmt_new_lgac(const ir_builder_config_t *config);
 ir_builder_t *ir_builder_rmt_new_sony(const ir_builder_config_t *config);
 
 /**
+* @brief Creat a AIRTON protocol builder
+*
+* @param config: configuration of AIRTON builder
+* @return
+*      Handle of AIRTON builder or NULL
+*/
+ir_builder_t *ir_builder_rmt_new_airton(const ir_builder_config_t *config);
+
+/**
 * @brief Creat a GREE protocol builder
 *
 * @param config: configuration of GREE builder
@@ -412,6 +421,15 @@ ir_parser_t *ir_parser_rmt_new_samsung(const ir_parser_config_t *config);
 *      Handle of LGAC parser or NULL
 */
 ir_parser_t *ir_parser_rmt_new_lgac(const ir_parser_config_t *config);
+
+/**
+* @brief Creat a AIRTON protocol parser
+*
+* @param config: configuration of AIRTON parser
+* @return
+*      Handle of AIRTON parser or NULL
+*/
+ir_parser_t *ir_parser_rmt_new_airton(const ir_parser_config_t *config);
 
 /**
 * @brief Creat a SONY protocol parser

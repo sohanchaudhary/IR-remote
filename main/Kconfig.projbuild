@@ -5,6 +5,18 @@ menu "Example Configuration"
         help
             Choose the IR protocol used in the example.
 
+        config EXAMPLE_IR_PROTOCOL_AIRTON
+            bool "AIRTON"
+            help
+                AIRTON is a kind of Pulse Distance Protocol.
+                It uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.
+                
+        config EXAMPLE_IR_PROTOCOL_EPSON
+            bool "EPSON"
+            help
+                EPSON is a kind of Pulse Distance Protocol.
+                It uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.
+
         config EXAMPLE_IR_PROTOCOL_GREE
             bool "GREE"
             help

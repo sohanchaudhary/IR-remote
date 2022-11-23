@@ -192,6 +192,18 @@ extern "C" {
 #define JVC_PAYLOAD_ZERO_LOW_US (550)
 #define JVC_ENDING_CODE_HIGH_US (600)
 
+/**
+ * @brief Timings for AIRTON protocol
+ *
+ */
+#define AIRTON_LEADING_CODE_HIGH_US (6630)
+#define AIRTON_LEADING_CODE_LOW_US (3350)
+#define AIRTON_PAYLOAD_ONE_HIGH_US (400)
+#define AIRTON_PAYLOAD_ONE_LOW_US (1260)
+#define AIRTON_PAYLOAD_ZERO_HIGH_US (400)
+#define AIRTON_PAYLOAD_ZERO_LOW_US (430)
+#define AIRTON_ENDING_CODE_HIGH_US (400)
+
 #ifdef __cplusplus
 }
 #endif
