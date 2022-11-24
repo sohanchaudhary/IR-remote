@@ -30,7 +30,7 @@ static const char *TAG = "airton_parser";
         }                                                                         \
     } while (0)
 
-#define AIRTON_DATA_FRAME_RMT_WORDS (34)
+#define AIRTON_DATA_FRAME_RMT_WORDS (58)
 #define AIRTON_REPEAT_FRAME_RMT_WORDS (2)
 
 typedef struct {
@@ -38,8 +38,6 @@ typedef struct {
     uint32_t flags;
     uint32_t leading_code_high_ticks;
     uint32_t leading_code_low_ticks;
-    uint32_t repeat_code_high_ticks;
-    uint32_t repeat_code_low_ticks;
     uint32_t payload_logic0_high_ticks;
     uint32_t payload_logic0_low_ticks;
     uint32_t payload_logic1_high_ticks;
@@ -106,17 +104,6 @@ static esp_err_t airton_parse_logic(ir_parser_t *parser, bool *logic)
     return ret;
 }
 
-static bool airton_parse_repeat_frame(airton_parser_t *airton_parser)
-{
-    airton_parser->cursor = 0;
-    rmt_item32_t item = airton_parser->buffer[airton_parser->cursor];
-    bool ret = (item.level0 == airton_parser->inverse) && (item.level1 != airton_parser->inverse) &&
-               airton_check_in_range(item.duration0, airton_parser->repeat_code_high_ticks, airton_parser->margin_ticks) &&
-               airton_check_in_range(item.duration1, airton_parser->repeat_code_low_ticks, airton_parser->margin_ticks);
-    airton_parser->cursor += 1;
-    return ret;
-}
-
 static esp_err_t airton_parser_input(ir_parser_t *parser, void *raw_data, uint32_t length)
 {
     esp_err_t ret = ESP_OK;
@@ -143,36 +130,27 @@ static esp_err_t airton_parser_get_scan_code(ir_parser_t *parser, uint32_t *addr
     uint32_t cmd = 0;
     bool logic_value = false;
     airton_parser_t *airton_parser = __containerof(parser, airton_parser_t, parent);
-    AIRTON_CHECK(address && command && repeat, "address, command and repeat can't be null", out, ESP_ERR_INVALID_ARG);
-    if (airton_parser->repeat) {
-        if (airton_parse_repeat_frame(airton_parser)) {
-            *address = airton_parser->last_address;
-            *command = airton_parser->last_command;
-            *repeat = true;
-            ret = ESP_OK;
-        }
-    } else {
-        if (airton_parse_head(airton_parser)) {
-            for (int i = 0; i < 16; i++) {
-                if (airton_parse_logic(parser, &logic_value) == ESP_OK) {
-                    addr |= (logic_value << i);
-                }
+
+    if (airton_parse_head(airton_parser)) {
+        for (int i = 0; i < 28; i++) {
+            if (airton_parse_logic(parser, &logic_value) == ESP_OK) {
+                addr |= (logic_value << i);
             }
-            for (int i = 0; i < 16; i++) {
-                if (airton_parse_logic(parser, &logic_value) == ESP_OK) {
-                    cmd |= (logic_value << i);
-                }
-            }
-            *address = addr;
-            *command = cmd;
-            *repeat = false;
-            // keep it as potential repeat code
-            airton_parser->last_address = addr;
-            airton_parser->last_command = cmd;
-            ret = ESP_OK;
         }
+        for (int i = 0; i < 28; i++) {
+            if (airton_parse_logic(parser, &logic_value) == ESP_OK) {
+                cmd |= (logic_value << i);
+            }
+        }
+        *address = addr;
+        *command = cmd;
+        *repeat = false;
+        // keep it as potential repeat code
+        airton_parser->last_address = addr;
+        airton_parser->last_command = cmd;
+        ret = ESP_OK;
     }
-out:
+    
     return ret;
 }
 
@@ -202,8 +180,6 @@ ir_parser_t *ir_parser_rmt_new_airton(const ir_parser_config_t *config)
     float ratio = (float)counter_clk_hz / 1e6;
     airton_parser->leading_code_high_ticks = (uint32_t)(ratio * AIRTON_LEADING_CODE_HIGH_US);
     airton_parser->leading_code_low_ticks = (uint32_t)(ratio * AIRTON_LEADING_CODE_LOW_US);
-    airton_parser->repeat_code_high_ticks = (uint32_t)(ratio * AIRTON_REPEAT_CODE_HIGH_US);
-    airton_parser->repeat_code_low_ticks = (uint32_t)(ratio * AIRTON_REPEAT_CODE_LOW_US);
     airton_parser->payload_logic0_high_ticks = (uint32_t)(ratio * AIRTON_PAYLOAD_ZERO_HIGH_US);
     airton_parser->payload_logic0_low_ticks = (uint32_t)(ratio * AIRTON_PAYLOAD_ZERO_LOW_US);
     airton_parser->payload_logic1_high_ticks = (uint32_t)(ratio * AIRTON_PAYLOAD_ONE_HIGH_US);

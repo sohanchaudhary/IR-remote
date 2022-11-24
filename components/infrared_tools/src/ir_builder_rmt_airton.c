@@ -23,8 +23,6 @@ typedef struct {
     uint32_t flags;
     uint32_t leading_code_high_ticks;
     uint32_t leading_code_low_ticks;
-    uint32_t repeat_code_high_ticks;
-    uint32_t repeat_code_low_ticks;
     uint32_t payload_logic0_high_ticks;
     uint32_t payload_logic0_low_ticks;
     uint32_t payload_logic1_high_ticks;
@@ -87,24 +85,16 @@ static esp_err_t airton_build_frame(ir_builder_t *builder, uint32_t address, uin
 {
     esp_err_t ret = ESP_OK;
     airton_builder_t *airton_builder = __containerof(builder, airton_builder_t, parent);
-    if (!airton_builder->flags & IR_TOOLS_FLAGS_PROTO_EXT) {
-        uint8_t low_byte = address & 0xFF;
-        uint8_t high_byte = (address >> 8) & 0xFF;
-        AIRTON_CHECK(low_byte == (~high_byte & 0xFF), "address not match standard AIRTON protocol", err, ESP_ERR_INVALID_ARG);
-        low_byte = command & 0xFF;
-        high_byte = (command >> 8) & 0xFF;
-        AIRTON_CHECK(low_byte == (~high_byte & 0xFF), "command not match standard AIRTON protocol", err, ESP_ERR_INVALID_ARG);
-    }
     builder->make_head(builder);
     // LSB -> MSB
-    for (int i = 0; i < 16; i++) {
+    for (int i = 0; i < 28; i++) {
         if (address & (1 << i)) {
             builder->make_logic1(builder);
         } else {
             builder->make_logic0(builder);
         }
     }
-    for (int i = 0; i < 16; i++) {
+    for (int i = 0; i < 28; i++) {
         if (command & (1 << i)) {
             builder->make_logic1(builder);
         } else {
@@ -112,22 +102,8 @@ static esp_err_t airton_build_frame(ir_builder_t *builder, uint32_t address, uin
         }
     }
     builder->make_end(builder);
-    return ESP_OK;
-err:
+   // return ESP_OK;
     return ret;
-}
-
-static esp_err_t airton_build_repeat_frame(ir_builder_t *builder)
-{
-    airton_builder_t *airton_builder = __containerof(builder, airton_builder_t, parent);
-    airton_builder->cursor = 0;
-    airton_builder->buffer[airton_builder->cursor].level0 = !airton_builder->inverse;
-    airton_builder->buffer[airton_builder->cursor].duration0 = airton_builder->repeat_code_high_ticks;
-    airton_builder->buffer[airton_builder->cursor].level1 = airton_builder->inverse;
-    airton_builder->buffer[airton_builder->cursor].duration1 = airton_builder->repeat_code_low_ticks;
-    airton_builder->cursor += 1;
-    airton_builder_make_end(builder);
-    return ESP_OK;
 }
 
 static esp_err_t airton_builder_get_result(ir_builder_t *builder, void *result, size_t *length)
@@ -171,8 +147,6 @@ ir_builder_t *ir_builder_rmt_new_airton(const ir_builder_config_t *config)
     float ratio = (float)counter_clk_hz / 1e6;
     airton_builder->leading_code_high_ticks = (uint32_t)(ratio * AIRTON_LEADING_CODE_HIGH_US);
     airton_builder->leading_code_low_ticks = (uint32_t)(ratio * AIRTON_LEADING_CODE_LOW_US);
-    airton_builder->repeat_code_high_ticks = (uint32_t)(ratio * AIRTON_REPEAT_CODE_HIGH_US);
-    airton_builder->repeat_code_low_ticks = (uint32_t)(ratio * AIRTON_REPEAT_CODE_LOW_US);
     airton_builder->payload_logic0_high_ticks = (uint32_t)(ratio * AIRTON_PAYLOAD_ZERO_HIGH_US);
     airton_builder->payload_logic0_low_ticks = (uint32_t)(ratio * AIRTON_PAYLOAD_ZERO_LOW_US);
     airton_builder->payload_logic1_high_ticks = (uint32_t)(ratio * AIRTON_PAYLOAD_ONE_HIGH_US);
@@ -184,10 +158,8 @@ ir_builder_t *ir_builder_rmt_new_airton(const ir_builder_config_t *config)
     airton_builder->parent.make_logic1 = airton_builder_make_logic1;
     airton_builder->parent.make_end = airton_builder_make_end;
     airton_builder->parent.build_frame = airton_build_frame;
-    airton_builder->parent.build_repeat_frame = airton_build_repeat_frame;
     airton_builder->parent.get_result = airton_builder_get_result;
     airton_builder->parent.del = airton_builder_del;
-    airton_builder->parent.repeat_period_ms = 110;
     return &airton_builder->parent;
 err:
     return ret;

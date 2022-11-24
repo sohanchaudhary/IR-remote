@@ -18,3 +18,4 @@ This driver is being developed for continuous monitoring of the IR signals and t
 14. TOSHIBA_AC (50, 72 bit Supported)
 15. TOSHIBA_TV
 16. EPSON projector IR Remote
+17. AIRTON AC
