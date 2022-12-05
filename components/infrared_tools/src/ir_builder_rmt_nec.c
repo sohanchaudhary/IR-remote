@@ -100,6 +100,27 @@ static esp_err_t nec_build_frame(ir_builder_t *builder, uint32_t address, uint32
 {
     esp_err_t ret = ESP_OK;
     nec_builder_t *nec_builder = __containerof(builder, nec_builder_t, parent);
+
+#if CONFIG_EXAMPLE_IR_PROTOCOL_AIWA
+    builder->make_head(builder);
+    // LSB -> MSB
+    for (int i = 0; i < 26; i++) {
+        if (address & (1 << i)) {
+            builder->make_logic1(builder);
+        } else {
+            builder->make_logic0(builder);
+        }
+    }
+    for (int i = 0; i < 16; i++) {
+        if (command & (1 << i)) {
+            builder->make_logic1(builder);
+        } else {
+            builder->make_logic0(builder);
+        }
+    }
+    builder->make_end(builder);
+    return ESP_OK;
+#else
     if (!nec_builder->flags & IR_TOOLS_FLAGS_PROTO_EXT) {
         uint8_t low_byte = address & 0xFF;
         uint8_t high_byte = (address >> 8) & 0xFF;
@@ -128,6 +149,7 @@ static esp_err_t nec_build_frame(ir_builder_t *builder, uint32_t address, uint32
     return ESP_OK;
 err:
     return ret;
+#endif
 }
 
 static esp_err_t nec_build_repeat_frame(ir_builder_t *builder)

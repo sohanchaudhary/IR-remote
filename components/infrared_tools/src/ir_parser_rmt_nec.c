@@ -30,7 +30,11 @@ static const char *TAG = "nec_parser";
         }                                                                         \
     } while (0)
 
+#if CONFIG_EXAMPLE_IR_PROTOCOL_AIWA
+#define NEC_DATA_FRAME_RMT_WORDS (44)
+#else
 #define NEC_DATA_FRAME_RMT_WORDS (34)
+#endif
 #define NEC_REPEAT_FRAME_RMT_WORDS (2)
 
 typedef struct {
@@ -153,6 +157,18 @@ static esp_err_t nec_parser_get_scan_code(ir_parser_t *parser, uint32_t *address
         }
     } else {
         if (nec_parse_head(nec_parser)) {
+#if CONFIG_EXAMPLE_IR_PROTOCOL_AIWA
+            for (int i = 0; i < 26; i++) {
+                if (nec_parse_logic(parser, &logic_value) == ESP_OK) {
+                    addr |= (logic_value << i);
+                }
+            }
+            for (int i = 0; i < 16; i++) {
+                if (nec_parse_logic(parser, &logic_value) == ESP_OK) {
+                    cmd |= (logic_value << i);
+                }
+            }
+#else
             for (int i = 0; i < 16; i++) {
                 if (nec_parse_logic(parser, &logic_value) == ESP_OK) {
                     addr |= (logic_value << i);
@@ -163,6 +179,7 @@ static esp_err_t nec_parser_get_scan_code(ir_parser_t *parser, uint32_t *address
                     cmd |= (logic_value << i);
                 }
             }
+#endif
             *address = addr;
             *command = cmd;
             *repeat = false;

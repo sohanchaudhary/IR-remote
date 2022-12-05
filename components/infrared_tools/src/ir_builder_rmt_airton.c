@@ -1,3 +1,6 @@
+//*********** reference: https://docs.google.com/spreadsheets/d/1l-qo6LPPkBYUGSJ65j3-j3iQJg7lGAo96AzR4s6NDOA/edit#gid=373853031  */
+//
+//
 #include <sys/cdefs.h>
 #include "esp_log.h"
 #include "ir_tools.h"

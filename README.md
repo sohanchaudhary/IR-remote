@@ -19,3 +19,4 @@ This driver is being developed for continuous monitoring of the IR signals and t
 15. TOSHIBA_TV
 16. EPSON projector IR Remote
 17. AIRTON AC
+18. AIWA for DVD

@@ -2054,6 +2054,16 @@
                     {
                         "children": [],
                         "depends_on": "<choice EXAMPLE_IR_PROTOCOL>",
+                        "help": "AIWA is a kind of Pulse Distance Protocol.\nIt uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.",
+                        "id": "EXAMPLE_IR_PROTOCOL_AIWA",
+                        "name": "EXAMPLE_IR_PROTOCOL_AIWA",
+                        "range": null,
+                        "title": "AIWA",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "<choice EXAMPLE_IR_PROTOCOL>",
                         "help": "AIRTON is a kind of Pulse Distance Protocol.\nIt uses ASK modulation and pulse distance encoding with a carrier frequency of 38 kHz.",
                         "id": "EXAMPLE_IR_PROTOCOL_AIRTON",
                         "name": "EXAMPLE_IR_PROTOCOL_AIRTON",

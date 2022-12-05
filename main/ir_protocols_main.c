@@ -109,7 +109,8 @@ static void example_ir_rx_task(void *arg)
     ir_parser_config.flags |= IR_TOOLS_FLAGS_PROTO_EXT; // Using extended IR protocols (both NEC and RC5 have extended version)
     ir_parser_t *ir_parser = NULL;
 
-#if CONFIG_EXAMPLE_IR_PROTOCOL_NEC | CONFIG_EXAMPLE_IR_PROTOCOL_LGTV | CONFIG_EXAMPLE_IR_PROTOCOL_TOSHIBA_TV | CONFIG_EXAMPLE_IR_PROTOCOL_EPSON
+#if CONFIG_EXAMPLE_IR_PROTOCOL_NEC | CONFIG_EXAMPLE_IR_PROTOCOL_LGTV | CONFIG_EXAMPLE_IR_PROTOCOL_TOSHIBA_TV | \
+    CONFIG_EXAMPLE_IR_PROTOCOL_EPSON | CONFIG_EXAMPLE_IR_PROTOCOL_AIWA
     ir_parser = ir_parser_rmt_new_nec(&ir_parser_config);
 #elif CONFIG_EXAMPLE_IR_PROTOCOL_SONY
     ir_parser = ir_parser_rmt_new_sony(&ir_parser_config);
@@ -202,9 +203,15 @@ static void example_ir_tx_task(void *arg)
 #elif CONFIG_EXAMPLE_IR_PROTOCOL_TOSHIBAAC50
     uint32_t addr = 0xF20D03;
     uint32_t cmd = 0x015040;
-#else 
+#elif CONFIG_EXAMPLE_IR_PROTOCOL_AIRTON
     uint32_t addr = 0x10ABCD2;
     uint32_t cmd = 0x20DCBA1;
+#elif CONFIG_EXAMPLE_IR_PROTOCOL_AIWA
+    uint32_t addr = 0x10ABCD;
+    uint32_t cmd = 0x20;
+#elif 
+    uint32_t addr = 0x10;
+    uint32_t cmd = 0x20;
 #endif
 
     rmt_item32_t *items = NULL;
@@ -218,7 +225,8 @@ static void example_ir_tx_task(void *arg)
     ir_builder_config_t ir_builder_config = IR_BUILDER_DEFAULT_CONFIG((ir_dev_t)example_tx_channel);
     ir_builder_config.flags |= IR_TOOLS_FLAGS_PROTO_EXT; // Using extended IR protocols (both NEC and RC5 have extended version)
 
-#if CONFIG_EXAMPLE_IR_PROTOCOL_NEC | CONFIG_EXAMPLE_IR_PROTOCOL_LGTV | CONFIG_EXAMPLE_IR_PROTOCOL_TOSHIBA_TV | CONFIG_EXAMPLE_IR_PROTOCOL_EPSON
+#if CONFIG_EXAMPLE_IR_PROTOCOL_NEC | CONFIG_EXAMPLE_IR_PROTOCOL_LGTV | CONFIG_EXAMPLE_IR_PROTOCOL_TOSHIBA_TV | \
+    CONFIG_EXAMPLE_IR_PROTOCOL_EPSON | CONFIG_EXAMPLE_IR_PROTOCOL_AIWA
     ir_builder = ir_builder_rmt_new_nec(&ir_builder_config);
 #elif CONFIG_EXAMPLE_IR_PROTOCOL_RC5
     ir_builder = ir_builder_rmt_new_rc5(&ir_builder_config);
@@ -294,5 +302,5 @@ static void example_ir_tx_task(void *arg)
 void app_main(void)
 {
     xTaskCreate(example_ir_rx_task, "ir_rx_task", 2048*8, NULL, 10, NULL);
-    xTaskCreate(example_ir_tx_task, "ir_tx_task", 2048*8, NULL, 10, NULL);
+    //xTaskCreate(example_ir_tx_task, "ir_tx_task", 2048*8, NULL, 10, NULL);
 }
