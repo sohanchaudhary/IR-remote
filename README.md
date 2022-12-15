@@ -23,11 +23,11 @@ This driver is being developed for continuous monitoring of the IR signals and t
 
 ## Steps to Run this project
 
-1. Clone the project from the link
-2. Configure the project using idf.py menuconfig command
+1. Clone the project from the link https://github.com/nepaldigitalsystems/IR-Blaster
+2. Configure the project using "idf.py menuconfig" command
 3. Select the IR protocol and configure RX and TX pin from the Example configuration list
-4. Build the project using the idf.py build command
+4. Build the project using the "idf.py build" command
 5. Flash the firmware to the esp-32 S3 using the following command
-    idf.py -p COM -b baudrate flash
+    "idf.py -p COM -b baudrate flash"
 6. Monitor the logs using the following command
-    idf.py -p COM -b 115200 monitor
+    "idf.py -p COM -b 115200 monitor"
