@@ -209,7 +209,7 @@ static void example_ir_tx_task(void *arg)
 #elif CONFIG_EXAMPLE_IR_PROTOCOL_AIWA
     uint32_t addr = 0x10ABCD;
     uint32_t cmd = 0x20;
-#elif 
+#else
     uint32_t addr = 0x10;
     uint32_t cmd = 0x20;
 #endif
