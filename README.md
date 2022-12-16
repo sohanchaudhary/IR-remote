@@ -24,9 +24,10 @@ This driver is being developed for continuous monitoring of the IR signals and t
 ##** Steps to Run this project**   
 Steps to configure the project  
 1. clone IR-Blaster repository from github  
-    'git clone https://github.com/ezloteam/Ezlo_Pi'  
+    `git clone https://github.com/ezloteam/Ezlo_Pi`  
 2. If you have already installed the esp-idf then go to step 3. If not install esp-idf
-3. Configure the project using 'idf.py menuconfig' command you will see  
+3. Configure the project using command you will see  
+    `idf.py menuconfig`   
     ![Image](/Ir-blaster_configuration.png)
 4. Goto Example Configuration  
 5. Select the Protocol in Infrored Protocol  
@@ -35,6 +36,9 @@ Steps to configure the project
 6. Configure the RX and TX pin  
     ![Image](/IR-protocol-Rx-Tx-pin.png)
 7. Save the configuration
-8. Build using 'idf.py build' command
-9. Flash the firmware using 'idf.py -p <COM Port Name> -b <baud> flash'
-10. Monitor using 'idf.py -p <COM Port Name> monitor'
+8. Build using command  
+    `idf.py build`
+9. Flash the firmware using     
+    `idf.py -p <COM Port Name> -b <baud> flash`
+10. Monitor using       
+    `idf.py -p <COM Port Name> monitor`
