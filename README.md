@@ -31,7 +31,7 @@ Steps to configure the project
     ![Image](/Ir-blaster_configuration.png)
 4. Goto Example Configuration  
 5. Select the Protocol in Infrored Protocol  
-    ![Image](/IR-protocol.png)
+    ![Image](/IR-protocol.png)  
     ![Image](/IR-protocol-selection.png)
 6. Configure the RX and TX pin  
     ![Image](/IR-protocol-Rx-Tx-pin.png)
