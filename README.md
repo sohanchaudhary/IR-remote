@@ -1,7 +1,7 @@
-# IR-Blaster
+# **IR-Blaster**
 This driver is being developed for continuous monitoring of the IR signals and transmitting as per the need.
 
-## Supported Protocols
+## **Supported Protocols**
 1. NEC  
 2. RC5
 3. Samsung (for TV and Projector)
@@ -21,8 +21,8 @@ This driver is being developed for continuous monitoring of the IR signals and t
 17. AIRTON AC
 18. AIWA for DVD
 
-##** Steps to Run this project**   
-Steps to configure the project  
+## **Steps to Run this project**   
+ 
 1. clone IR-Blaster repository from github  
     `git clone https://github.com/ezloteam/Ezlo_Pi`  
 2. If you have already installed the esp-idf then go to step 3. If not install esp-idf
