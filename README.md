@@ -29,7 +29,7 @@ Steps to configure the project
 3. Configure the project using "idf.py menuconfig" command you will see  
     ![Image](/Ir-blaster_configuration.png)
 4. Goto Example Configuration  
-5. Select the Protocol in Infrored Protocol
+5. Select the Protocol in Infrored Protocol  
     ![Image](/IR-protocol.png)
     ![Image](/IR-protocol-selection.png)
 6. Configure the RX and TX pin  
