@@ -21,13 +21,20 @@ This driver is being developed for continuous monitoring of the IR signals and t
 17. AIRTON AC
 18. AIWA for DVD
 
-## Steps to Run this project
-
-1. Clone the project from the link https://github.com/nepaldigitalsystems/IR-Blaster
-2. Configure the project using "idf.py menuconfig" command
-3. Select the IR protocol and configure RX and TX pin from the Example configuration list
-4. Build the project using the "idf.py build" command
-5. Flash the firmware to the esp-32 S3 using the following command
-    "idf.py -p COM -b baudrate flash"
-6. Monitor the logs using the following command
-    "idf.py -p COM -b 115200 monitor"
+##** Steps to Run this project**   
+Steps to configure the project  
+1. clone IR-Blaster repository from github  
+    "git clone https://github.com/ezloteam/Ezlo_Pi"  
+2. If you have already installed the esp-idf then go to step 3. If not install esp-idf
+3. Configure the project using "idf.py menuconfig" command you will see  
+    ![Image](/Ir-blaster_configuration.png)
+4. Goto Example Configuration  
+5. Select the Protocol in Infrored Protocol
+    ![Image](/IR-protocol.png)
+    ![Image](/IR-protocol-selection.png)
+6. Configure the RX and TX pin  
+    ![Image](/IR-protocol-Rx-Tx-pin.png)
+7. Save the configuration
+8. Build using "idf.py build" command
+9. Flash the firmware using "idf.py -p <COM Port Name> -b <baud> flash"
+10. Monitor using "idf.py -p <COM Port Name> monitor"
