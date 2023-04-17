@@ -23,6 +23,7 @@
                 "limitSymbolsToIncludedHeaders": false
             },
             "compileCommands": "${workspaceFolder}/build/compile_commands.json"
+            //"configurationProvider": "ms-vscode.makefile-tools"
         }
     ],
     "version": 4

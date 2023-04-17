@@ -175,7 +175,6 @@ static esp_err_t gree_parser_get_scan_code_gree(ir_parser_t *parser, uint32_t *a
         //}
             
         *address = addr;
-        *footer = ftr;
         *command = cmd;
         *repeat = false;
         //ESP_LOGI("INFO"," Reveiver scan function Called");
