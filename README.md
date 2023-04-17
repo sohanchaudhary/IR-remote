@@ -6,9 +6,6 @@
 
 This example illustrates how to encode and decode RMT signals with/to common IR protocols (e.g. NEC and RC5).
 
-[NEC](https://www.sbprojects.net/knowledge/ir/nec.php) and [RC5](https://www.sbprojects.net/knowledge/ir/rc5.php) have different encoding rules, but both can be compatible to RMT data format.
-
-The example supports building and parsing both normal and extended NEC/RC5 protocol. And also supports `repeat code` which would be sent out if one remote key got pressed for a specific long time.
 
 ## How to Use Example
 
@@ -48,29 +45,5 @@ Run `idf.py -p PORT flash monitor` to build, flash and monitor the project.
 
 (To exit the serial monitor, type ``Ctrl-]``.)
 
-See the [Getting Started Guide](https://docs.espressif.com/projects/esp-idf/en/latest/get-started/index.html) for full steps to configure and use ESP-IDF to build projects.
-
-## Example Output
-
-Run this example, you will see the following output log (for NEC protocol):
-```
-I (2000) example: Send command 0x20 to address 0x10
-I (2070) example: Scan Code  --- addr: 0x0010 cmd: 0x0020
-I (2220) example: Scan Code (repeat) --- addr: 0x0010 cmd: 0x0020
-I (4240) example: Send command 0x21 to address 0x10
-I (4310) example: Scan Code  --- addr: 0x0010 cmd: 0x0021
-I (4460) example: Scan Code (repeat) --- addr: 0x0010 cmd: 0x0021
-I (6480) example: Send command 0x22 to address 0x10
-I (6550) example: Scan Code  --- addr: 0x0010 cmd: 0x0022
-I (6700) example: Scan Code (repeat) --- addr: 0x0010 cmd: 0x0022
-I (8720) example: Send command 0x23 to address 0x10
-I (8790) example: Scan Code  --- addr: 0x0010 cmd: 0x0023
-I (8940) example: Scan Code (repeat) --- addr: 0x0010 cmd: 0x0023
-I (10960) example: Send command 0x24 to address 0x10
-I (11030) example: Scan Code  --- addr: 0x0010 cmd: 0x0024
-I (11180) example: Scan Code (repeat) --- addr: 0x0010 cmd: 0x0024
-```
-
-## Troubleshooting
-
-For any technical queries, please open an [issue] (https://github.com/espressif/esp-idf/issues) on GitHub. We will get back to you soon.
+### Main Objective
+The main objective of this program is to make the device learn the timing signals of the recevied IR Signals. The received IR signals is stored in terms of the signal timing period for each bit high and low signal.
